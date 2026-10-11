@@ -77,12 +77,21 @@ public class EventDetailsPanel extends JPanel {
         inner.add(navBar);
         inner.add(Box.createVerticalStrut(14));
 
-        // 2. HERO POSTER BANNER PLACEHOLDER
-        RoundedCard heroBanner = new RoundedCard(16, AppTheme.NAVY, AppTheme.NAVY_DARK);
-        heroBanner.setLayout(new BorderLayout(16, 12));
-        heroBanner.setBorder(BorderFactory.createEmptyBorder(24, 28, 24, 28));
-        heroBanner.setMaximumSize(new Dimension(Integer.MAX_VALUE, 160));
-        heroBanner.setAlignmentX(Component.LEFT_ALIGNMENT);
+        // 2. CONDITIONAL EVENT POSTER IMAGE (Only if uploaded and valid)
+        if (event.hasImage()) {
+            javax.swing.JComponent posterImg = ImageUtil.createImageViewer(event.getImagePath(), Integer.MAX_VALUE, 260, 14);
+            if (posterImg != null) {
+                inner.add(posterImg);
+                inner.add(Box.createVerticalStrut(16));
+            }
+        }
+
+        // HEADER CARD: Event Title, Host College and Category Badges
+        RoundedCard headerCard = new RoundedCard(14, AppTheme.CARD, AppTheme.BORDER);
+        headerCard.setLayout(new BorderLayout(16, 12));
+        headerCard.setBorder(BorderFactory.createEmptyBorder(18, 22, 18, 22));
+        headerCard.setMaximumSize(new Dimension(Integer.MAX_VALUE, 120));
+        headerCard.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         JPanel heroTop = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
         heroTop.setOpaque(false);
@@ -94,7 +103,7 @@ public class EventDetailsPanel extends JPanel {
                     new Color(250, 242, 222), AppTheme.ACCENT.darker());
             heroTop.add(beyondPill);
         }
-        heroBanner.add(heroTop, BorderLayout.NORTH);
+        headerCard.add(heroTop, BorderLayout.NORTH);
 
         JPanel heroMid = new JPanel();
         heroMid.setOpaque(false);
@@ -102,18 +111,18 @@ public class EventDetailsPanel extends JPanel {
 
         JLabel titleLbl = new JLabel(event.getEventName());
         titleLbl.setFont(AppTheme.BRAND.deriveFont(22f));
-        titleLbl.setForeground(Color.WHITE);
+        titleLbl.setForeground(AppTheme.TEXT);
         heroMid.add(titleLbl);
         heroMid.add(Box.createVerticalStrut(4));
 
         JLabel campusSubtitle = new JLabel("Organized by " + event.getCollege() + "  ·  " + event.getLocation());
         campusSubtitle.setFont(AppTheme.BODY);
-        campusSubtitle.setForeground(AppTheme.LAVENDER);
+        campusSubtitle.setForeground(AppTheme.MUTED);
         heroMid.add(campusSubtitle);
 
-        heroBanner.add(heroMid, BorderLayout.CENTER);
-        inner.add(heroBanner);
-        inner.add(Box.createVerticalStrut(20));
+        headerCard.add(heroMid, BorderLayout.CENTER);
+        inner.add(headerCard);
+        inner.add(Box.createVerticalStrut(18));
 
         // 3. TWO-COLUMN LAYOUT: Left (Details & Schedule) & Right (Creator & Actions)
         JPanel columns = new JPanel(new BorderLayout(20, 0));

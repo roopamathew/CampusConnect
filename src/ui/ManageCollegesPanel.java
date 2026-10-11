@@ -165,10 +165,13 @@ public class ManageCollegesPanel extends JPanel {
         JTextArea desc = new JTextArea(existing == null ? "" : existing.getDescription(), 3, 20);
         AppTheme.styleTextArea(desc);
 
+        final ImagePickerField imagePicker = new ImagePickerField(existing != null ? existing.getImagePath() : "");
+
         int row = 0;
         row = addField(form, gbc, row, "College / Institution Name *", name);
         row = addField(form, gbc, row, "Campus Location (City, State) *", location);
         row = addField(form, gbc, row, "Official Contact Email *", email);
+        row = addField(form, gbc, row, "Campus Image / Logo (Optional)", imagePicker);
 
         gbc.gridy = row++;
         JLabel descLabel = new JLabel("Campus Overview & Description *");
@@ -203,13 +206,16 @@ public class ManageCollegesPanel extends JPanel {
             }
 
             if (existing == null) {
-                DummyData.colleges.add(new College(DummyData.nextCollegeId(), n, l, em, d));
+                College created = new College(DummyData.nextCollegeId(), n, l, em, d);
+                created.setImagePath(imagePicker.getImagePath());
+                DummyData.colleges.add(created);
                 JOptionPane.showMessageDialog(dialog, "College registered successfully!", "College Added", JOptionPane.INFORMATION_MESSAGE);
             } else {
                 existing.setCollegeName(n);
                 existing.setLocation(l);
                 existing.setEmail(em);
                 existing.setDescription(d);
+                existing.setImagePath(imagePicker.getImagePath());
                 JOptionPane.showMessageDialog(dialog, "College details updated successfully!", "College Updated", JOptionPane.INFORMATION_MESSAGE);
             }
 

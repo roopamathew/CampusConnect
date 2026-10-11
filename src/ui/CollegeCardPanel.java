@@ -24,9 +24,13 @@ public class CollegeCardPanel extends RoundedCard {
         setMaximumSize(new Dimension(Integer.MAX_VALUE, 160));
         setAlignmentX(LEFT_ALIGNMENT);
 
-        // West crest avatar
-        InitialsAvatar crest = new InitialsAvatar(college.getCollegeName(), 52, AppTheme.NAVY, AppTheme.ACCENT);
-        add(crest, BorderLayout.WEST);
+        // West: Uploaded College Image (Only if valid image exists)
+        if (college.hasImage() && ImageUtil.isValidImage(college.getImagePath())) {
+            javax.swing.JComponent colImg = ImageUtil.createImageViewer(college.getImagePath(), 56, 56, 10);
+            if (colImg != null) {
+                add(colImg, BorderLayout.WEST);
+            }
+        }
 
         // Center info
         JPanel center = new JPanel();

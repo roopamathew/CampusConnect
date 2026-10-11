@@ -73,8 +73,12 @@ public class CollegeEventsPanel extends JPanel {
         heroCard.setMaximumSize(new Dimension(Integer.MAX_VALUE, 120));
         heroCard.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        InitialsAvatar crest = new InitialsAvatar(collegeName, 56, AppTheme.INDIGO, Color.WHITE);
-        heroCard.add(crest, BorderLayout.WEST);
+        if (matchedCollege != null && matchedCollege.hasImage() && ImageUtil.isValidImage(matchedCollege.getImagePath())) {
+            javax.swing.JComponent colImg = ImageUtil.createImageViewer(matchedCollege.getImagePath(), 56, 56, 10);
+            if (colImg != null) {
+                heroCard.add(colImg, BorderLayout.WEST);
+            }
+        }
 
         JPanel heroMid = new JPanel();
         heroMid.setOpaque(false);

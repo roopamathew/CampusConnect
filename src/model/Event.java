@@ -27,6 +27,7 @@ public class Event {
     private String creatorName = "";
     private String creatorEmail = "";
     private String creatorDesignation = "Event Coordinator";
+    private String imagePath = "";
 
     public Event(int eventId, String eventName, String description, String category,
                  String college, String venue, String location, LocalDate date,
@@ -217,6 +218,18 @@ public class Event {
 
     public void setCreatorDesignation(String creatorDesignation) {
         this.creatorDesignation = creatorDesignation;
+    }
+
+    public String getImagePath() {
+        return imagePath != null ? imagePath : "";
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath != null ? imagePath : "";
+    }
+
+    public boolean hasImage() {
+        return imagePath != null && !imagePath.trim().isEmpty();
     }
 
     @Override

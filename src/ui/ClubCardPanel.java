@@ -36,6 +36,14 @@ public class ClubCardPanel extends RoundedCard {
 
         add(top, BorderLayout.NORTH);
 
+        // West: Uploaded Club Image (Only if valid image exists)
+        if (club.hasImage() && ImageUtil.isValidImage(club.getImagePath())) {
+            javax.swing.JComponent clubImg = ImageUtil.createImageViewer(club.getImagePath(), 64, 64, 10);
+            if (clubImg != null) {
+                add(clubImg, BorderLayout.WEST);
+            }
+        }
+
         // Center: Name & Description
         JPanel center = new JPanel();
         center.setOpaque(false);

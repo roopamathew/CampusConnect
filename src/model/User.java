@@ -19,6 +19,7 @@ public class User {
     private String designation = "";
     private String phone = "";
     private String accountStatus = "Active";
+    private String imagePath = "";
 
     public User(String username, String password, String role, String fullName,
                 String email, String college, String interest) {
@@ -160,5 +161,17 @@ public class User {
 
     public void setAccountStatus(String accountStatus) {
         this.accountStatus = accountStatus;
+    }
+
+    public String getImagePath() {
+        return imagePath != null ? imagePath : "";
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath != null ? imagePath : "";
+    }
+
+    public boolean hasImage() {
+        return imagePath != null && !imagePath.trim().isEmpty();
     }
 }

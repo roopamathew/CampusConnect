@@ -31,7 +31,8 @@ public class EventCardPanel extends RoundedCard {
         super(14, AppTheme.CARD, AppTheme.BORDER);
         setHoverable(true);
         setLayout(new BorderLayout(12, 10));
-        setMaximumSize(new Dimension(Integer.MAX_VALUE, 220));
+        boolean hasValidImg = event.hasImage() && ImageUtil.isValidImage(event.getImagePath());
+        setMaximumSize(new Dimension(Integer.MAX_VALUE, hasValidImg ? 380 : 220));
         setAlignmentX(LEFT_ALIGNMENT);
 
         final User currentUser = mainFrame.getCurrentUser();
@@ -39,7 +40,19 @@ public class EventCardPanel extends RoundedCard {
                 && currentUser.getCollege() != null
                 && !currentUser.getCollege().equalsIgnoreCase(event.getCollege());
 
-        // TOP HEADER: Badges & Campus Indicator
+        // TOP SECTION: Conditional Image (only if valid image exists) + Badges
+        JPanel northSection = new JPanel();
+        northSection.setOpaque(false);
+        northSection.setLayout(new BoxLayout(northSection, BoxLayout.Y_AXIS));
+
+        if (hasValidImg) {
+            javax.swing.JComponent imgView = ImageUtil.createImageViewer(event.getImagePath(), Integer.MAX_VALUE, 160, 10);
+            if (imgView != null) {
+                northSection.add(imgView);
+                northSection.add(Box.createVerticalStrut(10));
+            }
+        }
+
         JPanel topRow = new JPanel(new BorderLayout());
         topRow.setOpaque(false);
 
@@ -62,7 +75,8 @@ public class EventCardPanel extends RoundedCard {
         seatsLabel.setForeground(event.getAvailableSeats() > 0 ? AppTheme.SUCCESS : AppTheme.DANGER);
         topRow.add(seatsLabel, BorderLayout.EAST);
 
-        add(topRow, BorderLayout.NORTH);
+        northSection.add(topRow);
+        add(northSection, BorderLayout.NORTH);
 
         // CENTER: Title & Details
         JPanel center = new JPanel();
@@ -71,7 +85,7 @@ public class EventCardPanel extends RoundedCard {
 
         JLabel titleLabel = new JLabel(event.getEventName());
         titleLabel.setFont(AppTheme.HEADING.deriveFont(Font.BOLD, 16f));
-        titleLabel.setForeground(AppTheme.NAVY);
+        titleLabel.setForeground(AppTheme.TEXT);
         center.add(titleLabel);
         center.add(Box.createVerticalStrut(4));
 

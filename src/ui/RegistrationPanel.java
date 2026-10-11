@@ -62,11 +62,19 @@ public class RegistrationPanel extends JPanel {
                 Registration reg = regs.get(i);
                 final Event event = DummyData.findEventById(reg.getEventId());
 
+                boolean hasImg = event != null && event.hasImage() && ImageUtil.isValidImage(event.getImagePath());
                 RoundedCard card = new RoundedCard(12, AppTheme.CARD, AppTheme.BORDER);
                 card.setHoverable(true);
                 card.setLayout(new BorderLayout(12, 10));
                 card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 140));
                 card.setAlignmentX(LEFT_ALIGNMENT);
+
+                if (hasImg) {
+                    javax.swing.JComponent img = ImageUtil.createImageViewer(event.getImagePath(), 90, 90, 8);
+                    if (img != null) {
+                        card.add(img, BorderLayout.WEST);
+                    }
+                }
 
                 // Top
                 JPanel top = new JPanel(new BorderLayout());

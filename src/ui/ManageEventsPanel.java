@@ -219,6 +219,8 @@ public class ManageEventsPanel extends JPanel {
         JComboBox<String> status = new JComboBox<String>(DummyData.STATUSES);
         AppTheme.styleComboBox(status);
 
+        final ImagePickerField posterPicker = new ImagePickerField(existing != null ? existing.getImagePath() : "");
+
         if (existing != null) {
             category.setSelectedItem(existing.getCategory());
             collegeBox.setSelectedItem(existing.getCollege());
@@ -251,6 +253,7 @@ public class ManageEventsPanel extends JPanel {
         row = addField(form, gbc, row, "Contact Email *", email);
         row = addField(form, gbc, row, "Maximum Participant Capacity *", max);
         row = addField(form, gbc, row, "Status *", status);
+        row = addField(form, gbc, row, "Event Poster Image (Optional)", posterPicker);
 
         JScrollPane scroll = new JScrollPane(form);
         scroll.setBorder(null);
@@ -302,6 +305,7 @@ public class ManageEventsPanel extends JPanel {
                             contact.getText().trim(), email.getText().trim(), maxP, maxP,
                             String.valueOf(status.getSelectedItem()),
                             creatorName, creatorEmail, creatorDesig);
+                    created.setImagePath(posterPicker.getImagePath());
                     DummyData.events.add(created);
 
                     JOptionPane.showMessageDialog(dialog, "Event created successfully!",
@@ -323,6 +327,7 @@ public class ManageEventsPanel extends JPanel {
                     existing.setContactEmail(email.getText().trim());
                     existing.setMaxParticipants(maxP);
                     existing.setStatus(String.valueOf(status.getSelectedItem()));
+                    existing.setImagePath(posterPicker.getImagePath());
 
                     // Preserve existing creator attribution if already set
                     if (existing.getCreatorName() == null || existing.getCreatorName().isEmpty()) {

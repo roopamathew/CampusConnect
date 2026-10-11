@@ -9,6 +9,7 @@ public class Club {
     private String description;
     private String contactPerson;
     private String contactEmail;
+    private String imagePath = "";
 
     public Club(int clubId, String clubName, String college, String category,
                 String description, String contactPerson, String contactEmail) {
@@ -75,5 +76,22 @@ public class Club {
 
     public void setContactEmail(String contactEmail) {
         this.contactEmail = contactEmail;
+    }
+
+    public String getImagePath() {
+        return imagePath != null ? imagePath : "";
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath != null ? imagePath : "";
+    }
+
+    public boolean hasImage() {
+        return imagePath != null && !imagePath.trim().isEmpty();
+    }
+
+    @Override
+    public String toString() {
+        return clubName;
     }
 }

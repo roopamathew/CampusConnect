@@ -197,6 +197,8 @@ public class ManageClubsPanel extends JPanel {
         JTextField emailField = new JTextField(existing == null ? (user != null ? user.getEmail() : "") : existing.getContactEmail());
         AppTheme.styleField(emailField);
 
+        final ImagePickerField imagePicker = new ImagePickerField(existing != null ? existing.getImagePath() : "");
+
         if (existing != null) {
             categoryBox.setSelectedItem(existing.getCategory());
             collegeBox.setSelectedItem(existing.getCollege());
@@ -223,6 +225,7 @@ public class ManageClubsPanel extends JPanel {
 
         row = addField(form, gbc, row, "Club Lead / Faculty Coordinator *", contactField);
         row = addField(form, gbc, row, "Official Contact Email *", emailField);
+        row = addField(form, gbc, row, "Club Logo / Banner Image (Optional)", imagePicker);
 
         root.add(new JScrollPane(form), BorderLayout.CENTER);
 
@@ -251,7 +254,9 @@ public class ManageClubsPanel extends JPanel {
             String chosenCat = String.valueOf(categoryBox.getSelectedItem());
 
             if (existing == null) {
-                DummyData.clubs.add(new Club(DummyData.nextClubId(), n, chosenCollege, chosenCat, d, cp, em));
+                Club created = new Club(DummyData.nextClubId(), n, chosenCollege, chosenCat, d, cp, em);
+                created.setImagePath(imagePicker.getImagePath());
+                DummyData.clubs.add(created);
                 JOptionPane.showMessageDialog(dialog, "Club registered successfully!", "Club Added", JOptionPane.INFORMATION_MESSAGE);
             } else {
                 existing.setClubName(n);
@@ -260,6 +265,7 @@ public class ManageClubsPanel extends JPanel {
                 existing.setDescription(d);
                 existing.setContactPerson(cp);
                 existing.setContactEmail(em);
+                existing.setImagePath(imagePicker.getImagePath());
                 JOptionPane.showMessageDialog(dialog, "Club details updated successfully!", "Club Updated", JOptionPane.INFORMATION_MESSAGE);
             }
 

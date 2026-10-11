@@ -24,7 +24,8 @@ public class NoticeCardPanel extends RoundedCard {
         super(12, AppTheme.CARD, AppTheme.BORDER);
         setHoverable(true);
         setLayout(new BorderLayout(10, 8));
-        setMaximumSize(new Dimension(Integer.MAX_VALUE, 160));
+        boolean hasValidImg = notice.hasImage() && ImageUtil.isValidImage(notice.getImagePath());
+        setMaximumSize(new Dimension(Integer.MAX_VALUE, hasValidImg ? 340 : 160));
         setAlignmentX(LEFT_ALIGNMENT);
 
         // TOP: Type Badge & Date
@@ -64,14 +65,22 @@ public class NoticeCardPanel extends RoundedCard {
 
         JLabel title = new JLabel(notice.getTitle());
         title.setFont(AppTheme.HEADING);
-        title.setForeground(AppTheme.NAVY);
+        title.setForeground(AppTheme.TEXT);
         body.add(title);
         body.add(Box.createVerticalStrut(6));
 
-        JLabel desc = new JLabel("<html><div style='width:680px;line-height:1.4;color:#1A233A;'>"
+        JLabel desc = new JLabel("<html><div style='width:680px;line-height:1.4;color:#94A3B8;'>"
                 + notice.getDescription() + "</div></html>");
         desc.setFont(AppTheme.BODY);
         body.add(desc);
+
+        if (hasValidImg) {
+            javax.swing.JComponent noticeImg = ImageUtil.createImageViewer(notice.getImagePath(), Integer.MAX_VALUE, 160, 8);
+            if (noticeImg != null) {
+                body.add(Box.createVerticalStrut(8));
+                body.add(noticeImg);
+            }
+        }
 
         add(body, BorderLayout.CENTER);
 

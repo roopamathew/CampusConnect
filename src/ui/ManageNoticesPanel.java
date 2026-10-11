@@ -191,6 +191,8 @@ public class ManageNoticesPanel extends JPanel {
         AppTheme.styleField(lockedCollege);
         lockedCollege.setEditable(false);
 
+        final ImagePickerField imagePicker = new ImagePickerField(existing != null ? existing.getImagePath() : "");
+
         if (existing != null) {
             typeBox.setSelectedItem(existing.getType());
             collegeBox.setSelectedItem(existing.getCollege());
@@ -215,6 +217,8 @@ public class ManageNoticesPanel extends JPanel {
         } else {
             row = addField(form, gbc, row, "Publishing College (Institutional Scope)", lockedCollege);
         }
+
+        row = addField(form, gbc, row, "Notice Attachment Image (Optional)", imagePicker);
 
         root.add(new JScrollPane(form), BorderLayout.CENTER);
 
@@ -241,13 +245,16 @@ public class ManageNoticesPanel extends JPanel {
             String chosenType = String.valueOf(typeBox.getSelectedItem());
 
             if (existing == null) {
-                DummyData.notices.add(new Notice(DummyData.nextNoticeId(), t, d, chosenCollege, LocalDate.now(), chosenType));
+                Notice created = new Notice(DummyData.nextNoticeId(), t, d, chosenCollege, LocalDate.now(), chosenType);
+                created.setImagePath(imagePicker.getImagePath());
+                DummyData.notices.add(created);
                 JOptionPane.showMessageDialog(dialog, "Notice published successfully!", "Notice Added", JOptionPane.INFORMATION_MESSAGE);
             } else {
                 existing.setTitle(t);
                 existing.setDescription(d);
                 if (isSuper) existing.setCollege(chosenCollege);
                 existing.setType(chosenType);
+                existing.setImagePath(imagePicker.getImagePath());
                 JOptionPane.showMessageDialog(dialog, "Notice updated successfully!", "Notice Updated", JOptionPane.INFORMATION_MESSAGE);
             }
 

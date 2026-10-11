@@ -7,6 +7,7 @@ public class College {
     private String location;
     private String email;
     private String description;
+    private String imagePath = "";
 
     public College(int collegeId, String collegeName, String location, String email, String description) {
         this.collegeId = collegeId;
@@ -54,6 +55,18 @@ public class College {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getImagePath() {
+        return imagePath != null ? imagePath : "";
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath != null ? imagePath : "";
+    }
+
+    public boolean hasImage() {
+        return imagePath != null && !imagePath.trim().isEmpty();
     }
 
     @Override

@@ -46,6 +46,7 @@ public class ProfilePanel extends JPanel {
     private final JTextField gradYearField = new JTextField();
     // Admin fields
     private final JTextField designationField = new JTextField();
+    private final ImagePickerField avatarPicker = new ImagePickerField();
 
     private final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
 
@@ -101,8 +102,19 @@ public class ProfilePanel extends JPanel {
         card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 120));
         card.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        InitialsAvatar avatar = new InitialsAvatar(user.getFullName(), 72, AppTheme.NAVY, AppTheme.ACCENT);
-        card.add(avatar, BorderLayout.WEST);
+        if (user.hasImage() && ImageUtil.isValidImage(user.getImagePath())) {
+            javax.swing.ImageIcon customAvatar = ImageUtil.createAvatarIcon(user.getImagePath(), 72);
+            if (customAvatar != null) {
+                JLabel avatarLbl = new JLabel(customAvatar);
+                card.add(avatarLbl, BorderLayout.WEST);
+            } else {
+                InitialsAvatar avatar = new InitialsAvatar(user.getFullName(), 72, AppTheme.NAVY, AppTheme.ACCENT);
+                card.add(avatar, BorderLayout.WEST);
+            }
+        } else {
+            InitialsAvatar avatar = new InitialsAvatar(user.getFullName(), 72, AppTheme.NAVY, AppTheme.ACCENT);
+            card.add(avatar, BorderLayout.WEST);
+        }
 
         JPanel details = new JPanel();
         details.setOpaque(false);
@@ -181,13 +193,14 @@ public class ProfilePanel extends JPanel {
         gradYearField.setText(user.getGraduationYear() != null ? user.getGraduationYear() : "");
 
         designationField.setText(user.getDesignation() != null ? user.getDesignation() : "");
+        avatarPicker.setImagePath(user.getImagePath());
     }
 
     private JPanel buildPersonalInfoSection(User user) {
         RoundedCard card = new RoundedCard(14, AppTheme.CARD, AppTheme.BORDER);
         card.setLayout(new GridBagLayout());
         card.setAlignmentX(Component.LEFT_ALIGNMENT);
-        card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 240));
+        card.setMaximumSize(new Dimension(Integer.MAX_VALUE, isEditing ? 320 : 240));
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -230,6 +243,10 @@ public class ProfilePanel extends JPanel {
 
             gbc.gridx = 1; gbc.gridy = 2;
             card.add(inputField("Primary Interest", interestBox), gbc);
+
+            gbc.gridx = 0; gbc.gridy = 3; gbc.gridwidth = 2;
+            card.add(inputField("Profile Photo (Optional)", avatarPicker), gbc);
+            gbc.gridwidth = 1;
         }
 
         return card;
@@ -466,6 +483,8 @@ public class ProfilePanel extends JPanel {
         } else if ("ADMIN".equalsIgnoreCase(user.getRole())) {
             user.setDesignation(designationField.getText().trim());
         }
+
+        user.setImagePath(avatarPicker.getImagePath());
 
         isEditing = false;
         mainFrame.refreshHeader();

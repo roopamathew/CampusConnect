@@ -177,7 +177,17 @@ public class MainFrame extends JFrame {
         textStack.add(welcome);
         textStack.add(college);
 
-        InitialsAvatar headerAvatar = new InitialsAvatar(currentUser.getFullName(), 38, AppTheme.INDIGO, Color.WHITE);
+        javax.swing.JComponent headerAvatar;
+        if (currentUser.hasImage() && ImageUtil.isValidImage(currentUser.getImagePath())) {
+            javax.swing.ImageIcon customIcon = ImageUtil.createAvatarIcon(currentUser.getImagePath(), 38);
+            if (customIcon != null) {
+                headerAvatar = new JLabel(customIcon);
+            } else {
+                headerAvatar = new InitialsAvatar(currentUser.getFullName(), 38, AppTheme.INDIGO, Color.WHITE);
+            }
+        } else {
+            headerAvatar = new InitialsAvatar(currentUser.getFullName(), 38, AppTheme.INDIGO, Color.WHITE);
+        }
 
         welcomeBlock.add(textStack);
         welcomeBlock.add(headerAvatar);

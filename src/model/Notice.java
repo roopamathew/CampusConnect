@@ -10,6 +10,7 @@ public class Notice {
     private String college;
     private LocalDate postedDate;
     private String type;
+    private String imagePath = "";
 
     public Notice(int noticeId, String title, String description, String college,
                   LocalDate postedDate, String type) {
@@ -67,5 +68,22 @@ public class Notice {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getImagePath() {
+        return imagePath != null ? imagePath : "";
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath != null ? imagePath : "";
+    }
+
+    public boolean hasImage() {
+        return imagePath != null && !imagePath.trim().isEmpty();
+    }
+
+    @Override
+    public String toString() {
+        return title;
     }
 }
