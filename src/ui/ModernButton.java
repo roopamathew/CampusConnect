@@ -2,7 +2,6 @@ package ui;
 
 import java.awt.Color;
 import java.awt.Cursor;
-import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -13,6 +12,7 @@ import javax.swing.JButton;
 
 /**
  * Modern Swing button with smooth hover effects and antialiased rounded corners.
+ * Adapts dynamically to CampusConnect Dark and Light design system.
  */
 public class ModernButton extends JButton {
 
@@ -90,50 +90,50 @@ public class ModernButton extends JButton {
         Color border = null;
 
         if (!isEnabled()) {
-            bg = new Color(230, 226, 220);
+            bg = AppTheme.isDarkMode ? new Color(30, 41, 59) : new Color(226, 232, 240);
             fg = AppTheme.MUTED;
         } else {
             switch (variant) {
                 case PRIMARY:
-                    if (isPressed) bg = AppTheme.INDIGO_DARK.darker();
-                    else if (isHovered) bg = AppTheme.INDIGO_DARK;
-                    else bg = AppTheme.INDIGO;
+                    if (isPressed) bg = AppTheme.PRIMARY_DARK.darker();
+                    else if (isHovered) bg = AppTheme.PRIMARY_DARK;
+                    else bg = AppTheme.PRIMARY;
                     fg = Color.WHITE;
                     break;
                 case SECONDARY:
-                    if (isPressed) bg = AppTheme.LAVENDER_SOFT;
-                    else if (isHovered) bg = new Color(248, 246, 252);
+                    if (isPressed) bg = AppTheme.isDarkMode ? AppTheme.CARD_ELEVATED.darker() : AppTheme.LAVENDER_SOFT;
+                    else if (isHovered) bg = AppTheme.isDarkMode ? AppTheme.CARD_ELEVATED : new Color(241, 245, 249);
                     else bg = AppTheme.CARD;
-                    fg = AppTheme.NAVY;
-                    border = isHovered ? AppTheme.INDIGO : AppTheme.BORDER;
+                    fg = AppTheme.TEXT;
+                    border = isHovered ? AppTheme.PRIMARY : AppTheme.BORDER;
                     break;
                 case ACCENT:
-                    if (isPressed) bg = new Color(170, 140, 90);
-                    else if (isHovered) bg = new Color(185, 155, 102);
+                    if (isPressed) bg = AppTheme.ACCENT.darker();
+                    else if (isHovered) bg = AppTheme.ACCENT.brighter();
                     else bg = AppTheme.ACCENT;
-                    fg = AppTheme.NAVY_DARK;
+                    fg = AppTheme.isDarkMode ? Color.BLACK : Color.WHITE;
                     break;
                 case DANGER:
-                    if (isPressed) bg = new Color(130, 60, 60);
-                    else if (isHovered) bg = new Color(145, 70, 70);
+                    if (isPressed) bg = AppTheme.DANGER.darker();
+                    else if (isHovered) bg = AppTheme.DANGER.brighter();
                     else bg = AppTheme.DANGER;
                     fg = Color.WHITE;
                     break;
                 case SUCCESS:
-                    if (isPressed) bg = new Color(45, 105, 70);
-                    else if (isHovered) bg = new Color(60, 120, 85);
+                    if (isPressed) bg = AppTheme.SUCCESS.darker();
+                    else if (isHovered) bg = AppTheme.SUCCESS.brighter();
                     else bg = AppTheme.SUCCESS;
                     fg = Color.WHITE;
                     break;
                 case OUTLINE:
-                    bg = isHovered ? new Color(AppTheme.INDIGO.getRed(), AppTheme.INDIGO.getGreen(), AppTheme.INDIGO.getBlue(), 20) : new Color(0, 0, 0, 0);
-                    fg = AppTheme.INDIGO;
-                    border = AppTheme.INDIGO;
+                    bg = isHovered ? new Color(AppTheme.PRIMARY.getRed(), AppTheme.PRIMARY.getGreen(), AppTheme.PRIMARY.getBlue(), 30) : new Color(0, 0, 0, 0);
+                    fg = AppTheme.PRIMARY;
+                    border = AppTheme.PRIMARY;
                     break;
                 case GHOST:
                 default:
-                    bg = isHovered ? new Color(AppTheme.NAVY.getRed(), AppTheme.NAVY.getGreen(), AppTheme.NAVY.getBlue(), 16) : new Color(0, 0, 0, 0);
-                    fg = AppTheme.NAVY;
+                    bg = isHovered ? new Color(AppTheme.TEXT.getRed(), AppTheme.TEXT.getGreen(), AppTheme.TEXT.getBlue(), 20) : new Color(0, 0, 0, 0);
+                    fg = AppTheme.TEXT;
                     break;
             }
         }
