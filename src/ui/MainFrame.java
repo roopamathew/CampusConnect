@@ -5,9 +5,9 @@ import model.User;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
-import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -58,6 +58,8 @@ public class MainFrame extends JFrame {
     private ManageCollegesPanel manageCollegesPanel;
     private ManageClubsPanel manageClubsPanel;
     private AdminRegistrationsPanel adminRegistrationsPanel;
+    private final Map<String, JButton> navButtons = new LinkedHashMap<String, JButton>();
+    private String lastNavCard;
 
     public MainFrame(User currentUser) {
         this.currentUser = currentUser;
@@ -87,10 +89,10 @@ public class MainFrame extends JFrame {
 
     private JPanel buildHeader() {
         JPanel header = new JPanel(new BorderLayout());
-        header.setBackground(Color.WHITE);
+        header.setBackground(AppTheme.CARD);
         header.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createMatteBorder(0, 0, 1, 0, AppTheme.BORDER),
-                BorderFactory.createEmptyBorder(12, 20, 12, 20)));
+                BorderFactory.createEmptyBorder(14, 24, 14, 24)));
 
         JPanel brand = new JPanel();
         brand.setOpaque(false);
@@ -102,7 +104,7 @@ public class MainFrame extends JFrame {
                 ? "Admin  ·  Discover Beyond Your Campus"
                 : "Discover Beyond Your Campus");
         tagline.setFont(AppTheme.SMALL);
-        tagline.setForeground(AppTheme.TEAL);
+        tagline.setForeground(AppTheme.MUTED);
         brand.add(name);
         brand.add(tagline);
 
@@ -115,7 +117,7 @@ public class MainFrame extends JFrame {
         welcome.setAlignmentX(RIGHT_ALIGNMENT);
         JLabel college = new JLabel(currentUser.getCollege());
         college.setFont(AppTheme.SMALL);
-        college.setForeground(AppTheme.TEAL);
+        college.setForeground(AppTheme.MUTED);
         college.setAlignmentX(RIGHT_ALIGNMENT);
         welcomeBlock.add(welcome);
         welcomeBlock.add(college);
@@ -129,8 +131,8 @@ public class MainFrame extends JFrame {
         JPanel sidebar = new JPanel();
         sidebar.setLayout(new BoxLayout(sidebar, BoxLayout.Y_AXIS));
         sidebar.setBackground(AppTheme.NAVY);
-        sidebar.setPreferredSize(new Dimension(210, 0));
-        sidebar.setBorder(BorderFactory.createEmptyBorder(16, 0, 16, 0));
+        sidebar.setPreferredSize(new Dimension(222, 0));
+        sidebar.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
 
         if ("ADMIN".equals(currentUser.getRole())) {
             addNav(sidebar, "Dashboard", ADMIN_DASHBOARD);
@@ -160,8 +162,25 @@ public class MainFrame extends JFrame {
     private void addNav(JPanel sidebar, String label, final String card) {
         JButton button = AppTheme.navButton(label);
         button.addActionListener(e -> showCard(card));
+        navButtons.put(card, button);
         sidebar.add(button);
-        sidebar.add(Box.createVerticalStrut(4));
+        sidebar.add(Box.createVerticalStrut(6));
+    }
+
+    private void highlightNav(String card) {
+        String key = card;
+        if (EVENT_DETAILS.equals(card)) {
+            key = lastNavCard;
+        } else if (COLLEGE_EVENTS.equals(card)) {
+            key = COLLEGES;
+        }
+        if (key == null || !navButtons.containsKey(key)) {
+            return;
+        }
+        lastNavCard = key;
+        for (Map.Entry<String, JButton> entry : navButtons.entrySet()) {
+            AppTheme.setNavActive(entry.getValue(), entry.getKey().equals(key));
+        }
     }
 
     private void buildCards() {
@@ -231,16 +250,23 @@ public class MainFrame extends JFrame {
         } else if (ADMIN_REGISTRATIONS.equals(name) && adminRegistrationsPanel != null) {
             adminRegistrationsPanel.refresh();
         }
+        highlightNav(name);
         cardLayout.show(cards, name);
     }
 
     public void showEventDetails(Event event, String backCard) {
         eventDetailsPanel.showEvent(event, backCard);
+        if (backCard != null && navButtons.containsKey(backCard)) {
+            highlightNav(backCard);
+        } else {
+            highlightNav(EVENT_DETAILS);
+        }
         cardLayout.show(cards, EVENT_DETAILS);
     }
 
     public void showCollegeEvents(String collegeName) {
         collegeEventsPanel.showCollege(collegeName);
+        highlightNav(COLLEGE_EVENTS);
         cardLayout.show(cards, COLLEGE_EVENTS);
     }
 

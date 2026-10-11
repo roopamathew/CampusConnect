@@ -5,12 +5,19 @@ import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.GraphicsEnvironment;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.Timer;
 import javax.swing.border.Border;
 
 /**
@@ -18,18 +25,28 @@ import javax.swing.border.Border;
  */
 public class AppTheme {
 
-    public static final Color NAVY = new Color(15, 32, 67);
-    public static final Color NAVY_DARK = new Color(10, 22, 48);
-    public static final Color TEAL = new Color(14, 116, 144);
-    public static final Color TEAL_DARK = new Color(8, 90, 112);
-    public static final Color ACCENT = new Color(245, 158, 11);
-    public static final Color BG = new Color(241, 245, 249);
-    public static final Color CARD = Color.WHITE;
-    public static final Color TEXT = new Color(30, 41, 59);
-    public static final Color MUTED = new Color(100, 116, 139);
-    public static final Color BORDER = new Color(226, 232, 240);
-    public static final Color DANGER = new Color(185, 28, 28);
-    public static final Color SUCCESS = new Color(22, 163, 74);
+    public static final Color NAVY = new Color(26, 35, 58);
+    public static final Color NAVY_DARK = new Color(18, 24, 41);
+    public static final Color INDIGO = new Color(76, 89, 140);
+    public static final Color INDIGO_DARK = new Color(58, 70, 118);
+    public static final Color LAVENDER = new Color(196, 186, 216);
+    public static final Color LAVENDER_SOFT = new Color(236, 230, 245);
+    /** Alias: primary accent used by existing screens. */
+    public static final Color TEAL = INDIGO;
+    public static final Color TEAL_DARK = INDIGO_DARK;
+    /** Quiet champagne gold. */
+    public static final Color ACCENT = new Color(196, 168, 122);
+    public static final Color BG = new Color(247, 243, 235);
+    public static final Color CARD = new Color(252, 250, 245);
+    public static final Color TEXT = new Color(26, 35, 58);
+    public static final Color MUTED = new Color(110, 104, 122);
+    public static final Color BORDER = new Color(226, 218, 206);
+    public static final Color SHADOW = new Color(210, 200, 188);
+    public static final Color DANGER = new Color(153, 80, 80);
+    public static final Color SUCCESS = new Color(74, 122, 96);
+    public static final Color NAV_ACTIVE = new Color(58, 70, 118);
+
+    public static final boolean REDUCED_MOTION = false;
 
     public static final Font BRAND = new Font("Segoe UI", Font.BOLD, 22);
     public static final Font TITLE = new Font("Segoe UI", Font.BOLD, 20);
@@ -40,8 +57,10 @@ public class AppTheme {
 
     public static Border cardBorder() {
         return BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(BORDER),
-                BorderFactory.createEmptyBorder(16, 16, 16, 16));
+                BorderFactory.createLineBorder(SHADOW),
+                BorderFactory.createCompoundBorder(
+                        BorderFactory.createLineBorder(BORDER),
+                        BorderFactory.createEmptyBorder(18, 18, 18, 18)));
     }
 
     public static JLabel heading(String text) {
@@ -59,45 +78,86 @@ public class AppTheme {
     }
 
     public static JButton primaryButton(String text) {
-        JButton button = baseButton(text, TEAL, Color.WHITE);
-        addHover(button, TEAL, TEAL_DARK);
+        JButton button = baseButton(text, INDIGO, CARD);
+        addHover(button, INDIGO, INDIGO_DARK);
         return button;
     }
 
     public static JButton accentButton(String text) {
         JButton button = baseButton(text, ACCENT, NAVY);
-        addHover(button, ACCENT, new Color(217, 119, 6));
+        addHover(button, ACCENT, new Color(176, 148, 102));
         return button;
     }
 
     public static JButton secondaryButton(String text) {
-        JButton button = baseButton(text, Color.WHITE, TEXT);
+        JButton button = baseButton(text, CARD, TEXT);
         button.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(BORDER),
                 BorderFactory.createEmptyBorder(8, 14, 8, 14)));
+        addHover(button, CARD, LAVENDER_SOFT);
         return button;
     }
 
     public static JButton dangerButton(String text) {
-        JButton button = baseButton(text, DANGER, Color.WHITE);
-        addHover(button, DANGER, new Color(153, 27, 27));
+        JButton button = baseButton(text, DANGER, CARD);
+        addHover(button, DANGER, new Color(130, 64, 64));
         return button;
     }
 
     public static JButton navButton(String text) {
         JButton button = new JButton(text);
         button.setFont(BOLD);
-        button.setForeground(Color.WHITE);
+        button.setForeground(new Color(236, 230, 245));
         button.setBackground(NAVY);
         button.setOpaque(true);
         button.setBorderPainted(false);
         button.setFocusPainted(false);
+        button.setContentAreaFilled(true);
         button.setHorizontalAlignment(JButton.LEFT);
         button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        button.setMaximumSize(new Dimension(Integer.MAX_VALUE, 42));
-        button.setBorder(BorderFactory.createEmptyBorder(10, 18, 10, 18));
-        addHover(button, NAVY, TEAL);
+        button.setMaximumSize(new Dimension(Integer.MAX_VALUE, 44));
+        button.setBorder(BorderFactory.createEmptyBorder(12, 20, 12, 20));
+        button.putClientProperty("cc.navActive", Boolean.FALSE);
+        addNavHover(button);
         return button;
+    }
+
+    public static void setNavActive(JButton button, boolean active) {
+        button.putClientProperty("cc.navActive", Boolean.valueOf(active));
+        if (active) {
+            button.setBackground(NAV_ACTIVE);
+            button.setForeground(Color.WHITE);
+            button.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createMatteBorder(0, 3, 0, 0, LAVENDER),
+                    BorderFactory.createEmptyBorder(12, 17, 12, 20)));
+        } else {
+            button.setBackground(NAVY);
+            button.setForeground(new Color(236, 230, 245));
+            button.setBorder(BorderFactory.createEmptyBorder(12, 20, 12, 20));
+        }
+    }
+
+    public static void styleField(JTextField field) {
+        field.setFont(BODY);
+        field.setForeground(TEXT);
+        field.setBackground(CARD);
+        field.setCaretColor(NAVY);
+        field.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(BORDER),
+                BorderFactory.createEmptyBorder(8, 10, 8, 10)));
+    }
+
+    public static void styleTable(JTable table) {
+        table.setRowHeight(28);
+        table.setFont(BODY);
+        table.setForeground(TEXT);
+        table.setBackground(CARD);
+        table.setGridColor(BORDER);
+        table.setSelectionBackground(LAVENDER);
+        table.setSelectionForeground(NAVY);
+        table.getTableHeader().setFont(BOLD);
+        table.getTableHeader().setForeground(NAVY);
+        table.getTableHeader().setBackground(LAVENDER_SOFT);
     }
 
     private static JButton baseButton(String text, Color background, Color foreground) {
@@ -107,6 +167,7 @@ public class AppTheme {
         button.setForeground(foreground);
         button.setFocusPainted(false);
         button.setBorderPainted(false);
+        button.setContentAreaFilled(true);
         button.setOpaque(true);
         button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         button.setBorder(BorderFactory.createEmptyBorder(8, 16, 8, 16));
@@ -117,19 +178,78 @@ public class AppTheme {
         button.addMouseListener(new MouseAdapter() {
             public void mouseEntered(MouseEvent e) {
                 if (button.isEnabled()) {
-                    button.setBackground(hover);
+                    blendBackground(button, hover);
                 }
             }
 
             public void mouseExited(MouseEvent e) {
-                button.setBackground(normal);
+                blendBackground(button, normal);
             }
         });
     }
 
+    private static void addNavHover(final JButton button) {
+        button.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent e) {
+                if (Boolean.TRUE.equals(button.getClientProperty("cc.navActive"))) {
+                    return;
+                }
+                blendBackground(button, INDIGO);
+            }
+
+            public void mouseExited(MouseEvent e) {
+                if (Boolean.TRUE.equals(button.getClientProperty("cc.navActive"))) {
+                    return;
+                }
+                blendBackground(button, NAVY);
+            }
+        });
+    }
+
+    private static void blendBackground(final JButton button, final Color target) {
+        stopBlend(button);
+        if (REDUCED_MOTION || GraphicsEnvironment.isHeadless()) {
+            button.setBackground(target);
+            return;
+        }
+        final Color start = button.getBackground();
+        final Timer timer = new Timer(18, null);
+        button.putClientProperty("cc.blend", timer);
+        timer.addActionListener(new ActionListener() {
+            int step = 0;
+            final int steps = 10;
+
+            public void actionPerformed(ActionEvent e) {
+                step++;
+                float t = step / (float) steps;
+                if (t >= 1f) {
+                    button.setBackground(target);
+                    timer.stop();
+                    return;
+                }
+                button.setBackground(lerp(start, target, t));
+            }
+        });
+        timer.start();
+    }
+
+    private static void stopBlend(JButton button) {
+        Object existing = button.getClientProperty("cc.blend");
+        if (existing instanceof Timer) {
+            ((Timer) existing).stop();
+        }
+    }
+
+    private static Color lerp(Color a, Color b, float t) {
+        int r = a.getRed() + Math.round((b.getRed() - a.getRed()) * t);
+        int g = a.getGreen() + Math.round((b.getGreen() - a.getGreen()) * t);
+        int bch = a.getBlue() + Math.round((b.getBlue() - a.getBlue()) * t);
+        return new Color(r, g, bch);
+    }
+
     public static void styleCard(Component component) {
-        if (component instanceof javax.swing.JComponent) {
-            javax.swing.JComponent panel = (javax.swing.JComponent) component;
+        if (component instanceof JComponent) {
+            JComponent panel = (JComponent) component;
             panel.setBackground(CARD);
             panel.setBorder(cardBorder());
             panel.setOpaque(true);

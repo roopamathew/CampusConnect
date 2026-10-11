@@ -4,13 +4,11 @@ import data.DummyData;
 import model.User;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -54,7 +52,7 @@ public class LoginFrame extends JFrame {
 
         JLabel name = new JLabel("CAMPUSCONNECT");
         name.setFont(AppTheme.BRAND);
-        name.setForeground(Color.WHITE);
+        name.setForeground(AppTheme.CARD);
         name.setHorizontalAlignment(SwingConstants.CENTER);
 
         JLabel tagline = new JLabel("Discover Beyond Your Campus");
@@ -66,7 +64,7 @@ public class LoginFrame extends JFrame {
                 + "Find hackathons, workshops, fests and notices from your college "
                 + "and from campuses around you.</div></html>");
         about.setFont(AppTheme.SMALL);
-        about.setForeground(new Color(203, 213, 225));
+        about.setForeground(AppTheme.LAVENDER);
         about.setHorizontalAlignment(SwingConstants.CENTER);
 
         gbc.gridy = 0;
@@ -101,14 +99,8 @@ public class LoginFrame extends JFrame {
 
         JLabel hint = AppTheme.muted("Your gateway to campus opportunities");
 
-        usernameField.setFont(AppTheme.BODY);
-        passwordField.setFont(AppTheme.BODY);
-        usernameField.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(AppTheme.BORDER),
-                BorderFactory.createEmptyBorder(8, 8, 8, 8)));
-        passwordField.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(AppTheme.BORDER),
-                BorderFactory.createEmptyBorder(8, 8, 8, 8)));
+        AppTheme.styleField(usernameField);
+        AppTheme.styleField(passwordField);
 
         JButton login = AppTheme.primaryButton("LOGIN");
         JButton exit = AppTheme.secondaryButton("EXIT");

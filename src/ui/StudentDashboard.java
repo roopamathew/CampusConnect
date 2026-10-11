@@ -112,10 +112,10 @@ public class StudentDashboard extends JPanel {
     private void addHighlightSection(String title, String subtitle, JPanel body) {
         JPanel wrap = new JPanel();
         wrap.setLayout(new BoxLayout(wrap, BoxLayout.Y_AXIS));
-        wrap.setBackground(new java.awt.Color(255, 251, 235));
+        wrap.setBackground(AppTheme.LAVENDER_SOFT);
         wrap.setBorder(javax.swing.BorderFactory.createCompoundBorder(
-                javax.swing.BorderFactory.createLineBorder(AppTheme.ACCENT),
-                javax.swing.BorderFactory.createEmptyBorder(14, 14, 14, 14)));
+                javax.swing.BorderFactory.createLineBorder(AppTheme.LAVENDER),
+                javax.swing.BorderFactory.createEmptyBorder(16, 16, 16, 16)));
         wrap.setAlignmentX(LEFT_ALIGNMENT);
         JLabel label = AppTheme.heading(title);
         label.setForeground(AppTheme.NAVY);
