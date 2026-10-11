@@ -1,5 +1,6 @@
 package data;
 
+import model.AdminRequest;
 import model.Club;
 import model.College;
 import model.Event;
@@ -26,6 +27,7 @@ public class DummyData {
     public static final List<User> users = new ArrayList<User>();
     public static final List<Registration> registrations = new ArrayList<Registration>();
     public static final Map<String, List<Integer>> bookmarksByEmail = new HashMap<String, List<Integer>>();
+    public static final List<AdminRequest> adminRequests = new ArrayList<AdminRequest>();
 
     private static boolean loaded = false;
 
@@ -193,17 +195,29 @@ public class DummyData {
                 "Tara Reddy", "lens@summitdesign.edu"));
 
         users.add(new User("student", "student123", "STUDENT", "Rebecca Zachariah",
-                "rebecca@mbaselios.edu", marBaselios, "Technology"));
+                "rebecca@mbaselios.edu", marBaselios, "Technology",
+                "B.Tech Computer Science & Engineering", "Software Engineering & Systems",
+                "Year 3, Semester 6", "2027", "Student Lead", "+91 98470 12345"));
         users.add(new User("admin", "admin123", "ADMIN", "Campus Admin",
-                "admin@campusconnect.edu", marBaselios, "General"));
+                "admin@campusconnect.edu", marBaselios, "General",
+                "Faculty of Engineering", "Computer Science & Engineering",
+                "Faculty", "N/A", "HOD & College Representative", "+91 94471 23456"));
+        users.add(new User("superadmin", "superadmin123", "SUPER_ADMIN", "Chief Administrator",
+                "superadmin@campusconnect.edu", "CampusConnect HQ", "Administration",
+                "Executive Administration", "Central Platform Operations",
+                "Staff", "N/A", "Super Administrator", "+91 99000 00001"));
         users.add(new User("rohan", "rohan123", "STUDENT", "Rohan Patel",
-                "rohan@horizontech.edu", horizon, "Technology"));
+                "rohan@horizontech.edu", horizon, "Technology",
+                "B.Tech Robotics", "AI & Robotics", "Year 2, Semester 4", "2028", "Student", "+91 98111 22334"));
         users.add(new User("nisha", "nisha123", "STUDENT", "Nisha Verma",
-                "nisha@lakesidebschool.edu", lakeside, "Finance"));
+                "nisha@lakesidebschool.edu", lakeside, "Finance",
+                "MBA Finance", "Business Analytics", "Year 1, Semester 2", "2027", "Student", "+91 98222 33445"));
         users.add(new User("leo", "leo123", "STUDENT", "Leo Fernandez",
-                "leo@meridian.edu", meridian, "Cultural"));
+                "leo@meridian.edu", meridian, "Cultural",
+                "BA Performing Arts", "Theatre & Media", "Year 3, Semester 5", "2027", "Student", "+91 98333 44556"));
         users.add(new User("maya", "maya123", "STUDENT", "Maya Krishnan",
-                "maya@summitdesign.edu", summit, "Arts"));
+                "maya@summitdesign.edu", summit, "Arts",
+                "B.Des Communication Design", "Visual Arts", "Year 2, Semester 3", "2028", "Student", "+91 98444 55667"));
 
         registrations.add(new Registration("Rebecca Zachariah", "rebecca@mbaselios.edu", 1,
                 "Inter College Hackathon", horizon, LocalDate.of(2026, 10, 2)));
@@ -220,12 +234,30 @@ public class DummyData {
         rebeccaBookmarks.add(3);
         rebeccaBookmarks.add(7);
         bookmarksByEmail.put("rebecca@mbaselios.edu", rebeccaBookmarks);
+
+        adminRequests.add(new AdminRequest(1, "Dr. Priya Sundaram", "priya.s@meridian.edu",
+                "+91 98765 43211", meridian, "Dean of Student Affairs",
+                "Requesting administrator access to coordinate inter-college cultural events and publish departmental notices.",
+                LocalDate.of(2026, 10, 5), "PENDING"));
+        adminRequests.add(new AdminRequest(2, "Prof. Rajesh Nair", "rajesh@pioneer.edu",
+                "+91 98765 43222", pioneer, "Head of Innovation & Hackathons",
+                "Need access to post upcoming inter-college coding events and manage sports notices.",
+                LocalDate.of(2026, 10, 6), "PENDING"));
+        adminRequests.add(new AdminRequest(3, "Dr. Anita Roy", "anita.roy@summitdesign.edu",
+                "+91 98765 43233", summit, "Faculty Lead, Design Exhibitions",
+                "To coordinate national design competitions and photography seminars across partner colleges.",
+                LocalDate.of(2026, 9, 28), "APPROVED"));
     }
 
-    public static User findUser(String username, String password) {
+    public static User findUser(String usernameOrEmail, String password) {
+        if (usernameOrEmail == null || password == null) {
+            return null;
+        }
+        String id = usernameOrEmail.trim();
         for (int i = 0; i < users.size(); i++) {
             User user = users.get(i);
-            if (user.getUsername().equals(username) && user.getPassword().equals(password)) {
+            if ((user.getUsername().equalsIgnoreCase(id) || user.getEmail().equalsIgnoreCase(id))
+                    && user.getPassword().equals(password)) {
                 return user;
             }
         }
@@ -517,5 +549,140 @@ public class DummyData {
                 registrations.remove(i);
             }
         }
+    }
+
+    public static int nextAdminRequestId() {
+        int max = 0;
+        for (int i = 0; i < adminRequests.size(); i++) {
+            if (adminRequests.get(i).getRequestId() > max) {
+                max = adminRequests.get(i).getRequestId();
+            }
+        }
+        return max + 1;
+    }
+
+    public static boolean isUsernameTaken(String username) {
+        if (username == null) return false;
+        String trimmed = username.trim();
+        for (int i = 0; i < users.size(); i++) {
+            if (users.get(i).getUsername().equalsIgnoreCase(trimmed)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean isEmailTaken(String email) {
+        if (email == null) return false;
+        String trimmed = email.trim();
+        for (int i = 0; i < users.size(); i++) {
+            if (users.get(i).getEmail().equalsIgnoreCase(trimmed)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean hasPendingRequestForEmail(String email) {
+        if (email == null) return false;
+        String trimmed = email.trim();
+        for (int i = 0; i < adminRequests.size(); i++) {
+            AdminRequest req = adminRequests.get(i);
+            if (req.getEmail().equalsIgnoreCase(trimmed) && "PENDING".equalsIgnoreCase(req.getStatus())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static List<AdminRequest> getPendingAdminRequests() {
+        List<AdminRequest> list = new ArrayList<AdminRequest>();
+        for (int i = 0; i < adminRequests.size(); i++) {
+            if ("PENDING".equalsIgnoreCase(adminRequests.get(i).getStatus())) {
+                list.add(adminRequests.get(i));
+            }
+        }
+        return list;
+    }
+
+    public static boolean approveAdminRequest(AdminRequest req, String tempPassword) {
+        if (req == null || !"PENDING".equalsIgnoreCase(req.getStatus())) {
+            return false;
+        }
+        req.setStatus("APPROVED");
+        req.setReviewedDate(LocalDate.now());
+
+        String baseUsername = req.getEmail().split("@")[0].replaceAll("[^a-zA-Z0-9_]", "").toLowerCase();
+        if (baseUsername.isEmpty()) {
+            baseUsername = "admin" + req.getRequestId();
+        }
+        String chosenUsername = baseUsername;
+        int suffix = 1;
+        while (isUsernameTaken(chosenUsername)) {
+            chosenUsername = baseUsername + suffix;
+            suffix++;
+        }
+
+        String pwd = (tempPassword != null && !tempPassword.trim().isEmpty()) ? tempPassword.trim() : "admin123";
+
+        User newAdmin = new User(chosenUsername, pwd, "ADMIN", req.getFullName(),
+                req.getEmail(), req.getCollege(), "General",
+                "Administration", "Campus Administration", "N/A", "N/A",
+                req.getDesignation(), req.getPhone());
+        users.add(newAdmin);
+        return true;
+    }
+
+    public static boolean rejectAdminRequest(AdminRequest req, String reason) {
+        if (req == null || !"PENDING".equalsIgnoreCase(req.getStatus())) {
+            return false;
+        }
+        req.setStatus("REJECTED");
+        req.setReviewedDate(LocalDate.now());
+        req.setReviewerNotes(reason == null ? "Application criteria not met." : reason);
+        return true;
+    }
+
+    public static List<Club> getClubsByCollege(String collegeName) {
+        List<Club> result = new ArrayList<Club>();
+        if (collegeName == null) return result;
+        for (int i = 0; i < clubs.size(); i++) {
+            if (collegeName.equalsIgnoreCase(clubs.get(i).getCollege())) {
+                result.add(clubs.get(i));
+            }
+        }
+        return result;
+    }
+
+    public static List<Notice> getNoticesByCollege(String collegeName) {
+        List<Notice> result = new ArrayList<Notice>();
+        if (collegeName == null) return result;
+        for (int i = 0; i < notices.size(); i++) {
+            if (collegeName.equalsIgnoreCase(notices.get(i).getCollege())) {
+                result.add(notices.get(i));
+            }
+        }
+        return result;
+    }
+
+    public static List<Registration> getRegistrationsByCollege(String collegeName) {
+        List<Registration> result = new ArrayList<Registration>();
+        if (collegeName == null) return result;
+        for (int i = 0; i < registrations.size(); i++) {
+            if (collegeName.equalsIgnoreCase(registrations.get(i).getCollege())) {
+                result.add(registrations.get(i));
+            }
+        }
+        return result;
+    }
+
+    public static List<User> getAdmins() {
+        List<User> result = new ArrayList<User>();
+        for (int i = 0; i < users.size(); i++) {
+            if ("ADMIN".equalsIgnoreCase(users.get(i).getRole())) {
+                result.add(users.get(i));
+            }
+        }
+        return result;
     }
 }

@@ -147,17 +147,40 @@ public class AppTheme {
                 BorderFactory.createEmptyBorder(8, 10, 8, 10)));
     }
 
+    public static void styleComboBox(javax.swing.JComboBox<?> box) {
+        box.setFont(BODY);
+        box.setForeground(TEXT);
+        box.setBackground(CARD);
+        box.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(BORDER),
+                BorderFactory.createEmptyBorder(4, 6, 4, 6)));
+    }
+
+    public static void styleTextArea(javax.swing.JTextArea area) {
+        area.setFont(BODY);
+        area.setForeground(TEXT);
+        area.setBackground(CARD);
+        area.setCaretColor(NAVY);
+        area.setLineWrap(true);
+        area.setWrapStyleWord(true);
+        area.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(BORDER),
+                BorderFactory.createEmptyBorder(8, 10, 8, 10)));
+    }
+
     public static void styleTable(JTable table) {
-        table.setRowHeight(28);
+        table.setRowHeight(32);
         table.setFont(BODY);
         table.setForeground(TEXT);
         table.setBackground(CARD);
         table.setGridColor(BORDER);
-        table.setSelectionBackground(LAVENDER);
+        table.setSelectionBackground(LAVENDER_SOFT);
         table.setSelectionForeground(NAVY);
+        table.setShowVerticalLines(false);
         table.getTableHeader().setFont(BOLD);
         table.getTableHeader().setForeground(NAVY);
         table.getTableHeader().setBackground(LAVENDER_SOFT);
+        table.getTableHeader().setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, BORDER));
     }
 
     private static JButton baseButton(String text, Color background, Color foreground) {

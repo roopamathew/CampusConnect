@@ -2,14 +2,19 @@ package ui;
 
 import data.DummyData;
 import model.Notice;
+import model.User;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-import java.awt.GridLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.time.LocalDate;
-
-import javax.swing.JButton;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.BorderFactory;
 import javax.swing.JComboBox;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -20,58 +25,84 @@ import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 
+/**
+ * Notice management panel scoped strictly to the authenticated administrator's college.
+ */
 public class ManageNoticesPanel extends JPanel {
 
+    private final MainFrame mainFrame;
     private final DefaultTableModel model;
     private final JTable table;
 
     public ManageNoticesPanel(MainFrame mainFrame) {
-        setLayout(new BorderLayout(12, 12));
+        this.mainFrame = mainFrame;
+        setLayout(new BorderLayout(14, 14));
         setBackground(AppTheme.BG);
-        setBorder(javax.swing.BorderFactory.createEmptyBorder(16, 20, 16, 20));
+        setBorder(BorderFactory.createEmptyBorder(20, 24, 20, 24));
 
-        JLabel heading = new JLabel("Manage Notices");
-        heading.setFont(AppTheme.TITLE);
-        heading.setForeground(AppTheme.NAVY);
+        User currentUser = mainFrame.getCurrentUser();
+        String subtitle = (currentUser != null && !"SUPER_ADMIN".equals(currentUser.getRole()))
+                ? "Official announcements and broadcasts for " + currentUser.getCollege()
+                : "Platform-wide notice board management";
 
-        model = new DefaultTableModel(new String[] {"ID", "Title", "College", "Date", "Type"}, 0) {
+        JPanel header = UiUtil.pageHeader("Manage Campus Notices", subtitle, null);
+        add(header, BorderLayout.NORTH);
+
+        model = new DefaultTableModel(new String[] {"ID", "Notice Title", "College", "Date Posted", "Priority / Type"}, 0) {
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
         };
         table = new JTable(model);
-        table.setRowHeight(26);
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        table.setFont(AppTheme.BODY);
-        table.getTableHeader().setFont(AppTheme.BOLD);
+        AppTheme.styleTable(table);
 
+        JPanel tableWrapper = new RoundedCard(12, AppTheme.CARD, AppTheme.BORDER);
+        tableWrapper.setLayout(new BorderLayout());
+        JScrollPane scroll = new JScrollPane(table);
+        scroll.setBorder(null);
+        scroll.getViewport().setBackground(AppTheme.CARD);
+        tableWrapper.add(scroll, BorderLayout.CENTER);
+        add(tableWrapper, BorderLayout.CENTER);
+
+        // Buttons
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
         buttons.setOpaque(false);
-        JButton add = AppTheme.primaryButton("Add");
-        JButton edit = AppTheme.secondaryButton("Edit");
-        JButton delete = AppTheme.dangerButton("Delete");
-        add.addActionListener(e -> openForm(null));
-        edit.addActionListener(e -> {
-            Notice notice = selected();
-            if (notice != null) {
-                openForm(notice);
-            }
-        });
-        delete.addActionListener(e -> deleteSelected());
-        buttons.add(add);
-        buttons.add(edit);
-        buttons.add(delete);
 
-        add(heading, BorderLayout.NORTH);
-        add(new JScrollPane(table), BorderLayout.CENTER);
+        ModernButton addBtn = new ModernButton("+ Add Notice", ModernButton.Variant.PRIMARY);
+        ModernButton editBtn = new ModernButton("✎ Edit Selected", ModernButton.Variant.SECONDARY);
+        ModernButton deleteBtn = new ModernButton("✕ Delete", ModernButton.Variant.DANGER);
+
+        addBtn.addActionListener(e -> openForm(null));
+        editBtn.addActionListener(e -> {
+            Notice notice = selected();
+            if (notice != null) openForm(notice);
+        });
+        deleteBtn.addActionListener(e -> deleteSelected());
+
+        buttons.add(addBtn);
+        buttons.add(editBtn);
+        buttons.add(deleteBtn);
         add(buttons, BorderLayout.SOUTH);
+
         refresh();
     }
 
     public void refresh() {
         model.setRowCount(0);
-        for (int i = 0; i < DummyData.notices.size(); i++) {
-            Notice notice = DummyData.notices.get(i);
+        User user = mainFrame.getCurrentUser();
+        boolean isSuper = user != null && "SUPER_ADMIN".equals(user.getRole());
+        String adminCollege = user != null ? user.getCollege() : "";
+
+        List<Notice> list = new ArrayList<Notice>();
+        for (Notice notice : DummyData.notices) {
+            if (isSuper || (adminCollege != null && adminCollege.equalsIgnoreCase(notice.getCollege()))) {
+                list.add(notice);
+            }
+        }
+
+        for (int i = 0; i < list.size(); i++) {
+            Notice notice = list.get(i);
             model.addRow(new Object[] {
                     Integer.valueOf(notice.getNoticeId()),
                     notice.getTitle(),
@@ -85,14 +116,14 @@ public class ManageNoticesPanel extends JPanel {
     private Notice selected() {
         int row = table.getSelectedRow();
         if (row < 0) {
-            JOptionPane.showMessageDialog(this, "Please select a notice first.",
+            JOptionPane.showMessageDialog(this, "Please select a notice from the table first.",
                     "Manage Notices", JOptionPane.WARNING_MESSAGE);
             return null;
         }
         int id = ((Integer) model.getValueAt(row, 0)).intValue();
-        for (int i = 0; i < DummyData.notices.size(); i++) {
-            if (DummyData.notices.get(i).getNoticeId() == id) {
-                return DummyData.notices.get(i);
+        for (Notice n : DummyData.notices) {
+            if (n.getNoticeId() == id) {
+                return n;
             }
         }
         return null;
@@ -100,12 +131,12 @@ public class ManageNoticesPanel extends JPanel {
 
     private void deleteSelected() {
         Notice notice = selected();
-        if (notice == null) {
-            return;
-        }
+        if (notice == null) return;
+
         int choice = JOptionPane.showConfirmDialog(this,
-                "Are you sure you want to delete this notice?",
-                "Delete Notice", JOptionPane.YES_NO_OPTION);
+                "Are you sure you want to delete notice: '" + notice.getTitle() + "'?",
+                "Confirm Delete", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+
         if (choice == JOptionPane.YES_OPTION) {
             DummyData.notices.remove(notice);
             refresh();
@@ -114,50 +145,133 @@ public class ManageNoticesPanel extends JPanel {
         }
     }
 
-    private void openForm(Notice existing) {
-        JTextField title = new JTextField(existing == null ? "" : existing.getTitle());
-        JTextArea description = new JTextArea(existing == null ? "" : existing.getDescription(), 4, 20);
-        JComboBox<String> college = new JComboBox<String>(DummyData.getCollegeNames().toArray(new String[0]));
-        JComboBox<String> type = new JComboBox<String>(DummyData.NOTICE_TYPES);
-        if (existing != null) {
-            college.setSelectedItem(existing.getCollege());
-            type.setSelectedItem(existing.getType());
-        }
-        JPanel form = new JPanel(new GridLayout(0, 1, 4, 4));
-        form.add(new JLabel("Title"));
-        form.add(title);
-        form.add(new JLabel("Description"));
-        form.add(new JScrollPane(description));
-        form.add(new JLabel("College"));
-        form.add(college);
-        form.add(new JLabel("Type"));
-        form.add(type);
+    public void openForm(Notice existing) {
+        final User user = mainFrame.getCurrentUser();
+        final boolean isSuper = user != null && "SUPER_ADMIN".equals(user.getRole());
+        final String adminCollege = user != null ? user.getCollege() : "Mar Baselios College";
 
-        int result = JOptionPane.showConfirmDialog(this, form,
-                existing == null ? "Add Notice" : "Edit Notice",
-                JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-        if (result != JOptionPane.OK_OPTION) {
-            return;
+        final JDialog dialog = new JDialog(mainFrame, existing == null ? "Create Campus Notice" : "Edit Notice", true);
+        dialog.setSize(520, 520);
+        dialog.setLocationRelativeTo(mainFrame);
+
+        JPanel root = new JPanel(new BorderLayout());
+        root.setBackground(AppTheme.BG);
+
+        JPanel head = new JPanel(new BorderLayout());
+        head.setBackground(AppTheme.NAVY);
+        head.setBorder(BorderFactory.createEmptyBorder(18, 20, 18, 20));
+        JLabel title = new JLabel(existing == null ? "Publish New Notice" : "Edit Notice");
+        title.setFont(AppTheme.TITLE);
+        title.setForeground(java.awt.Color.WHITE);
+        head.add(title, BorderLayout.CENTER);
+        root.add(head, BorderLayout.NORTH);
+
+        JPanel form = new JPanel(new GridBagLayout());
+        form.setBackground(AppTheme.CARD);
+        form.setBorder(BorderFactory.createEmptyBorder(18, 20, 18, 20));
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(4, 4, 4, 4);
+        gbc.weightx = 1;
+
+        JTextField titleField = new JTextField(existing == null ? "" : existing.getTitle());
+        AppTheme.styleField(titleField);
+
+        JTextArea descArea = new JTextArea(existing == null ? "" : existing.getDescription(), 4, 20);
+        AppTheme.styleTextArea(descArea);
+
+        JComboBox<String> typeBox = new JComboBox<String>(DummyData.NOTICE_TYPES);
+        AppTheme.styleComboBox(typeBox);
+
+        JComboBox<String> collegeBox = new JComboBox<String>(DummyData.getCollegeNames().toArray(new String[0]));
+        AppTheme.styleComboBox(collegeBox);
+        JTextField lockedCollege = new JTextField(adminCollege);
+        AppTheme.styleField(lockedCollege);
+        lockedCollege.setEditable(false);
+
+        if (existing != null) {
+            typeBox.setSelectedItem(existing.getType());
+            collegeBox.setSelectedItem(existing.getCollege());
         }
-        if (title.getText().trim().isEmpty() || description.getText().trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Please fill all required fields.",
-                    "Validation", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-        if (existing == null) {
-            DummyData.notices.add(new Notice(DummyData.nextNoticeId(), title.getText().trim(),
-                    description.getText().trim(), String.valueOf(college.getSelectedItem()),
-                    LocalDate.now(), String.valueOf(type.getSelectedItem())));
-            JOptionPane.showMessageDialog(this, "Notice added successfully.",
-                    "Add Notice", JOptionPane.INFORMATION_MESSAGE);
+
+        int row = 0;
+        row = addField(form, gbc, row, "Notice Title *", titleField);
+
+        gbc.gridy = row++;
+        JLabel descLabel = new JLabel("Announcement Body *");
+        descLabel.setFont(AppTheme.BOLD);
+        descLabel.setForeground(AppTheme.NAVY);
+        form.add(descLabel, gbc);
+
+        gbc.gridy = row++;
+        form.add(new JScrollPane(descArea), gbc);
+
+        row = addField(form, gbc, row, "Notice Priority / Type *", typeBox);
+
+        if (isSuper) {
+            row = addField(form, gbc, row, "Publishing College *", collegeBox);
         } else {
-            existing.setTitle(title.getText().trim());
-            existing.setDescription(description.getText().trim());
-            existing.setCollege(String.valueOf(college.getSelectedItem()));
-            existing.setType(String.valueOf(type.getSelectedItem()));
-            JOptionPane.showMessageDialog(this, "Notice updated successfully.",
-                    "Edit Notice", JOptionPane.INFORMATION_MESSAGE);
+            row = addField(form, gbc, row, "Publishing College (Institutional Scope)", lockedCollege);
         }
-        refresh();
+
+        root.add(new JScrollPane(form), BorderLayout.CENTER);
+
+        // Actions
+        JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 12));
+        actions.setBackground(AppTheme.CARD);
+        actions.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, AppTheme.BORDER));
+
+        ModernButton cancelBtn = new ModernButton("Cancel", ModernButton.Variant.SECONDARY);
+        cancelBtn.addActionListener(e -> dialog.dispose());
+
+        ModernButton saveBtn = new ModernButton("Save Notice", ModernButton.Variant.PRIMARY);
+        saveBtn.addActionListener(e -> {
+            String t = titleField.getText().trim();
+            String d = descArea.getText().trim();
+
+            if (t.isEmpty() || d.isEmpty()) {
+                JOptionPane.showMessageDialog(dialog, "Please fill in all required fields.",
+                        "Validation Error", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            String chosenCollege = isSuper ? String.valueOf(collegeBox.getSelectedItem()) : adminCollege;
+            String chosenType = String.valueOf(typeBox.getSelectedItem());
+
+            if (existing == null) {
+                DummyData.notices.add(new Notice(DummyData.nextNoticeId(), t, d, chosenCollege, LocalDate.now(), chosenType));
+                JOptionPane.showMessageDialog(dialog, "Notice published successfully!", "Notice Added", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                existing.setTitle(t);
+                existing.setDescription(d);
+                if (isSuper) existing.setCollege(chosenCollege);
+                existing.setType(chosenType);
+                JOptionPane.showMessageDialog(dialog, "Notice updated successfully!", "Notice Updated", JOptionPane.INFORMATION_MESSAGE);
+            }
+
+            refresh();
+            dialog.dispose();
+        });
+
+        actions.add(cancelBtn);
+        actions.add(saveBtn);
+        root.add(actions, BorderLayout.SOUTH);
+
+        dialog.setContentPane(root);
+        dialog.setVisible(true);
+    }
+
+    private int addField(JPanel form, GridBagConstraints gbc, int row, String label, java.awt.Component field) {
+        gbc.gridy = row++;
+        JLabel lbl = new JLabel(label);
+        lbl.setFont(AppTheme.BOLD);
+        lbl.setForeground(AppTheme.NAVY);
+        form.add(lbl, gbc);
+
+        gbc.gridy = row++;
+        form.add(field, gbc);
+        return row;
     }
 }

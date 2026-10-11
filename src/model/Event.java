@@ -24,6 +24,9 @@ public class Event {
     private int maxParticipants;
     private int availableSeats;
     private String status;
+    private String creatorName = "";
+    private String creatorEmail = "";
+    private String creatorDesignation = "Event Coordinator";
 
     public Event(int eventId, String eventName, String description, String category,
                  String college, String venue, String location, LocalDate date,
@@ -46,6 +49,22 @@ public class Event {
         this.maxParticipants = maxParticipants;
         this.availableSeats = availableSeats;
         this.status = status;
+        this.creatorName = contactPerson != null ? contactPerson : "Campus Admin";
+        this.creatorEmail = contactEmail != null ? contactEmail : "admin@campusconnect.edu";
+    }
+
+    public Event(int eventId, String eventName, String description, String category,
+                 String college, String venue, String location, LocalDate date,
+                 LocalTime startTime, LocalTime endTime, LocalDate registrationDeadline,
+                 String contactPerson, String contactEmail, int maxParticipants,
+                 int availableSeats, String status, String creatorName, String creatorEmail,
+                 String creatorDesignation) {
+        this(eventId, eventName, description, category, college, venue, location,
+             date, startTime, endTime, registrationDeadline, contactPerson, contactEmail,
+             maxParticipants, availableSeats, status);
+        this.creatorName = creatorName != null ? creatorName : contactPerson;
+        this.creatorEmail = creatorEmail != null ? creatorEmail : contactEmail;
+        this.creatorDesignation = creatorDesignation != null ? creatorDesignation : "Event Coordinator";
     }
 
     public int getEventId() {
@@ -174,6 +193,30 @@ public class Event {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getCreatorName() {
+        return creatorName;
+    }
+
+    public void setCreatorName(String creatorName) {
+        this.creatorName = creatorName;
+    }
+
+    public String getCreatorEmail() {
+        return creatorEmail;
+    }
+
+    public void setCreatorEmail(String creatorEmail) {
+        this.creatorEmail = creatorEmail;
+    }
+
+    public String getCreatorDesignation() {
+        return creatorDesignation;
+    }
+
+    public void setCreatorDesignation(String creatorDesignation) {
+        this.creatorDesignation = creatorDesignation;
     }
 
     @Override
