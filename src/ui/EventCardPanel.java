@@ -83,13 +83,14 @@ public class EventCardPanel extends RoundedCard {
         center.setOpaque(false);
         center.setLayout(new BoxLayout(center, BoxLayout.Y_AXIS));
 
-        JLabel titleLabel = new JLabel(event.getEventName());
+        JLabel titleLabel = new JLabel("<html><b style='font-size:14px;color:#1A233A;'>" + event.getEventName() + "</b></html>");
         titleLabel.setFont(AppTheme.HEADING.deriveFont(Font.BOLD, 16f));
         titleLabel.setForeground(AppTheme.TEXT);
         center.add(titleLabel);
         center.add(Box.createVerticalStrut(4));
 
-        JLabel collegeLoc = new JLabel(event.getCollege() + "  ·  " + event.getVenue() + ", " + event.getLocation());
+        JLabel collegeLoc = new JLabel("<html><span style='color:#64748B;font-size:12px;'>"
+                + event.getCollege() + "  ·  " + event.getVenue() + ", " + event.getLocation() + "</span></html>");
         collegeLoc.setFont(AppTheme.BODY);
         collegeLoc.setForeground(AppTheme.MUTED);
         center.add(collegeLoc);
@@ -118,7 +119,7 @@ public class EventCardPanel extends RoundedCard {
         add(center, BorderLayout.CENTER);
 
         // SOUTH: Actions & Creator attribution
-        JPanel bottomRow = new JPanel(new BorderLayout());
+        JPanel bottomRow = new JPanel(new BorderLayout(10, 0));
         bottomRow.setOpaque(false);
         bottomRow.setBorder(BorderFactory.createEmptyBorder(6, 0, 0, 0));
 

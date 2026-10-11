@@ -26,7 +26,7 @@ public class AdminRegistrationsPanel extends JPanel {
 
     private final MainFrame mainFrame;
     private final DefaultTableModel model;
-    private final JComboBox<String> eventFilter = new JComboBox<String>();
+    private final AutoCompleteComboBox eventFilter = AutoCompleteComboBox.freeText(new String[]{"All Events"});
     private final JLabel countLabel = new JLabel();
 
     public AdminRegistrationsPanel(MainFrame mainFrame) {
@@ -45,7 +45,7 @@ public class AdminRegistrationsPanel extends JPanel {
         // Filter Bar
         RoundedCard filterBar = new RoundedCard(12, AppTheme.CARD, AppTheme.BORDER);
         filterBar.setLayout(new BorderLayout(12, 0));
-        filterBar.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
+        filterBar.setMaximumSize(new Dimension(Integer.MAX_VALUE, 60));
 
         JPanel filterLeft = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
         filterLeft.setOpaque(false);
@@ -100,18 +100,20 @@ public class AdminRegistrationsPanel extends JPanel {
         boolean isSuper = user != null && "SUPER_ADMIN".equals(user.getRole());
         String adminCollege = user != null ? user.getCollege() : "";
 
-        Object selected = eventFilter.getSelectedItem();
-        eventFilter.removeAllItems();
-        eventFilter.addItem("All Events");
+        String selected = eventFilter.getValue();
+        List<String> items = new ArrayList<String>();
+        items.add("All Events");
 
         for (Event ev : DummyData.events) {
             if (isSuper || (adminCollege != null && adminCollege.equalsIgnoreCase(ev.getCollege()))) {
-                eventFilter.addItem(ev.getEventName());
+                items.add(ev.getEventName());
             }
         }
 
-        if (selected != null) {
-            eventFilter.setSelectedItem(selected);
+        eventFilter.setItems(items.toArray(new String[0]));
+
+        if (selected != null && !selected.isEmpty()) {
+            eventFilter.setValue(selected);
         }
         fillTable();
     }
@@ -122,7 +124,7 @@ public class AdminRegistrationsPanel extends JPanel {
         boolean isSuper = user != null && "SUPER_ADMIN".equals(user.getRole());
         String adminCollege = user != null ? user.getCollege() : "";
 
-        String filter = String.valueOf(eventFilter.getSelectedItem());
+        String filter = eventFilter.getValue();
         int count = 0;
 
         for (Registration reg : DummyData.registrations) {

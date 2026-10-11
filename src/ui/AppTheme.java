@@ -29,7 +29,7 @@ import javax.swing.border.Border;
 public class AppTheme {
 
     // --- State & Listeners ---
-    public static boolean isDarkMode = true;
+    public static boolean isDarkMode = false;  // Light theme is the default
     private static final List<Runnable> themeListeners = new CopyOnWriteArrayList<Runnable>();
 
     // --- Dark Palette (Source of Truth) ---
@@ -68,28 +68,28 @@ public class AppTheme {
     public static final Color LIGHT_LAVENDER = new Color(99, 102, 241);
     public static final Color LIGHT_LAVENDER_SOFT = new Color(238, 242, 255);
 
-    // --- Active Mutable Theme Colors ---
-    public static Color BG = DARK_BG;
-    public static Color NAVY = DARK_NAVY;
-    public static Color NAVY_DARK = DARK_NAVY_DARK;
-    public static Color CARD = DARK_CARD;
-    public static Color CARD_ELEVATED = DARK_CARD_ELEVATED;
-    public static Color TEXT = DARK_TEXT;
-    public static Color MUTED = DARK_MUTED;
-    public static Color BORDER = DARK_BORDER;
-    public static Color SHADOW = DARK_SHADOW;
-    public static Color INDIGO = DARK_PRIMARY;
-    public static Color INDIGO_DARK = DARK_PRIMARY_DARK;
-    public static Color PRIMARY = DARK_PRIMARY;
-    public static Color PRIMARY_DARK = DARK_PRIMARY_DARK;
-    public static Color TEAL = DARK_PRIMARY;
-    public static Color TEAL_DARK = DARK_PRIMARY_DARK;
-    public static Color ACCENT = DARK_ACCENT;
-    public static Color SUCCESS = DARK_SUCCESS;
-    public static Color DANGER = DARK_DANGER;
-    public static Color LAVENDER = DARK_LAVENDER;
-    public static Color LAVENDER_SOFT = DARK_LAVENDER_SOFT;
-    public static Color NAV_ACTIVE = DARK_PRIMARY;
+    // --- Active Mutable Theme Colors (initialized to Light palette; updateColors() sets final values) ---
+    public static Color BG = LIGHT_BG;
+    public static Color NAVY = LIGHT_NAVY;
+    public static Color NAVY_DARK = LIGHT_NAVY_DARK;
+    public static Color CARD = LIGHT_CARD;
+    public static Color CARD_ELEVATED = LIGHT_CARD_ELEVATED;
+    public static Color TEXT = LIGHT_TEXT;
+    public static Color MUTED = LIGHT_MUTED;
+    public static Color BORDER = LIGHT_BORDER;
+    public static Color SHADOW = LIGHT_SHADOW;
+    public static Color INDIGO = LIGHT_PRIMARY;
+    public static Color INDIGO_DARK = LIGHT_PRIMARY_DARK;
+    public static Color PRIMARY = LIGHT_PRIMARY;
+    public static Color PRIMARY_DARK = LIGHT_PRIMARY_DARK;
+    public static Color TEAL = LIGHT_PRIMARY;
+    public static Color TEAL_DARK = LIGHT_PRIMARY_DARK;
+    public static Color ACCENT = LIGHT_ACCENT;
+    public static Color SUCCESS = LIGHT_SUCCESS;
+    public static Color DANGER = LIGHT_DANGER;
+    public static Color LAVENDER = LIGHT_LAVENDER;
+    public static Color LAVENDER_SOFT = LIGHT_LAVENDER_SOFT;
+    public static Color NAV_ACTIVE = LIGHT_PRIMARY;
 
     public static final boolean REDUCED_MOTION = false;
 

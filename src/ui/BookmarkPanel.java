@@ -98,7 +98,7 @@ public class BookmarkPanel extends JPanel {
 
                 JLabel title = new JLabel(event.getEventName());
                 title.setFont(AppTheme.HEADING);
-                title.setForeground(AppTheme.NAVY);
+                title.setForeground(AppTheme.TEXT);
                 mid.add(title);
                 mid.add(Box.createVerticalStrut(4));
 

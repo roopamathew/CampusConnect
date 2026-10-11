@@ -69,7 +69,7 @@ public class NoticeCardPanel extends RoundedCard {
         body.add(title);
         body.add(Box.createVerticalStrut(6));
 
-        JLabel desc = new JLabel("<html><div style='width:680px;line-height:1.4;color:#94A3B8;'>"
+        JLabel desc = new JLabel("<html><div style='line-height:1.4;color:#64748B;'>"
                 + notice.getDescription() + "</div></html>");
         desc.setFont(AppTheme.BODY);
         body.add(desc);

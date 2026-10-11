@@ -30,7 +30,7 @@ public class AdminRequestsPanel extends JPanel {
     private final MainFrame mainFrame;
     private final DefaultTableModel model;
     private final JTable table;
-    private final JComboBox<String> statusFilter = new JComboBox<String>(new String[] {
+    private final AutoCompleteComboBox statusFilter = AutoCompleteComboBox.strict(new String[] {
             "Pending Only", "All Requests", "Approved", "Rejected"
     });
     private final JLabel countLabel = new JLabel();
@@ -48,7 +48,7 @@ public class AdminRequestsPanel extends JPanel {
         // Filter Bar Card
         RoundedCard filterBar = new RoundedCard(12, AppTheme.CARD, AppTheme.BORDER);
         filterBar.setLayout(new BorderLayout(12, 0));
-        filterBar.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
+        filterBar.setMaximumSize(new Dimension(Integer.MAX_VALUE, 60));
 
         JPanel filterLeft = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
         filterLeft.setOpaque(false);
@@ -126,7 +126,7 @@ public class AdminRequestsPanel extends JPanel {
 
     private void fillTable() {
         model.setRowCount(0);
-        String filter = String.valueOf(statusFilter.getSelectedItem());
+        String filter = statusFilter.getValue();
         int count = 0;
 
         for (AdminRequest req : DummyData.adminRequests) {

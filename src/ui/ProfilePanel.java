@@ -36,7 +36,7 @@ public class ProfilePanel extends JPanel {
     private final JTextField nameField = new JTextField();
     private final JTextField emailField = new JTextField();
     private final JTextField phoneField = new JTextField();
-    private final JComboBox<String> interestBox = new JComboBox<String>(new String[] {
+    private final AutoCompleteComboBox interestBox = AutoCompleteComboBox.freeText(new String[] {
             "Technology", "Cultural", "Finance", "Sports", "Arts", "General"
     });
     // Student fields
@@ -99,7 +99,6 @@ public class ProfilePanel extends JPanel {
     private JPanel buildProfileHeader(User user) {
         RoundedCard card = new RoundedCard(16, AppTheme.CARD, AppTheme.BORDER);
         card.setLayout(new BorderLayout(20, 0));
-        card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 120));
         card.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         if (user.hasImage() && ImageUtil.isValidImage(user.getImagePath())) {
@@ -184,7 +183,7 @@ public class ProfilePanel extends JPanel {
         emailField.setText(user.getEmail() != null ? user.getEmail() : "");
         phoneField.setText(user.getPhone() != null ? user.getPhone() : "");
         if (user.getInterest() != null) {
-            interestBox.setSelectedItem(user.getInterest());
+            interestBox.setValue(user.getInterest());
         }
 
         courseField.setText(user.getCourse() != null ? user.getCourse() : "");
@@ -200,7 +199,6 @@ public class ProfilePanel extends JPanel {
         RoundedCard card = new RoundedCard(14, AppTheme.CARD, AppTheme.BORDER);
         card.setLayout(new GridBagLayout());
         card.setAlignmentX(Component.LEFT_ALIGNMENT);
-        card.setMaximumSize(new Dimension(Integer.MAX_VALUE, isEditing ? 320 : 240));
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -256,7 +254,6 @@ public class ProfilePanel extends JPanel {
         RoundedCard card = new RoundedCard(14, AppTheme.CARD, AppTheme.BORDER);
         card.setLayout(new GridBagLayout());
         card.setAlignmentX(Component.LEFT_ALIGNMENT);
-        card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 260));
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -313,7 +310,6 @@ public class ProfilePanel extends JPanel {
         RoundedCard card = new RoundedCard(14, AppTheme.CARD, AppTheme.BORDER);
         card.setLayout(new GridBagLayout());
         card.setAlignmentX(Component.LEFT_ALIGNMENT);
-        card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 220));
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -354,7 +350,6 @@ public class ProfilePanel extends JPanel {
         RoundedCard card = new RoundedCard(14, AppTheme.CARD, AppTheme.BORDER);
         card.setLayout(new GridBagLayout());
         card.setAlignmentX(Component.LEFT_ALIGNMENT);
-        card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 180));
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -384,7 +379,6 @@ public class ProfilePanel extends JPanel {
         RoundedCard card = new RoundedCard(14, AppTheme.CARD, AppTheme.BORDER);
         card.setLayout(new GridBagLayout());
         card.setAlignmentX(Component.LEFT_ALIGNMENT);
-        card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 180));
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -455,7 +449,7 @@ public class ProfilePanel extends JPanel {
         String newName = nameField.getText().trim();
         String newEmail = emailField.getText().trim();
         String newPhone = phoneField.getText().trim();
-        String newInterest = String.valueOf(interestBox.getSelectedItem());
+        String newInterest = interestBox.getValue();
 
         if (newName.isEmpty() || newEmail.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Full Name and Email Address cannot be blank.",

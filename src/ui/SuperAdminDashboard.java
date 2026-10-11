@@ -49,13 +49,13 @@ public class SuperAdminDashboard extends JPanel {
         if (superAdmin == null) return;
 
         // 1. HERO BANNER
-        RoundedCard hero = new RoundedCard(14, AppTheme.NAVY, AppTheme.NAVY_DARK);
+        RoundedCard hero = new RoundedCard(14, AppTheme.PRIMARY, AppTheme.PRIMARY_DARK);
         hero.setLayout(new BorderLayout(16, 0));
         hero.setBorder(BorderFactory.createEmptyBorder(20, 24, 20, 24));
-        hero.setMaximumSize(new Dimension(Integer.MAX_VALUE, 115));
+        hero.setMaximumSize(new Dimension(Integer.MAX_VALUE, 130));
         hero.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        InitialsAvatar avatar = new InitialsAvatar(superAdmin.getFullName(), 54, AppTheme.ACCENT, AppTheme.NAVY_DARK);
+        InitialsAvatar avatar = new InitialsAvatar(superAdmin.getFullName(), 54, AppTheme.ACCENT, Color.WHITE);
         hero.add(avatar, BorderLayout.WEST);
 
         JPanel details = new JPanel();
@@ -75,9 +75,9 @@ public class SuperAdminDashboard extends JPanel {
         details.add(titleRow);
         details.add(Box.createVerticalStrut(4));
 
-        JLabel scope = new JLabel("Central Platform Governance   ·   Administrator Onboarding & Institutional Oversight");
+        JLabel scope = new JLabel("Central Platform Governance   \u00b7   Administrator Onboarding & Institutional Oversight");
         scope.setFont(AppTheme.BODY);
-        scope.setForeground(AppTheme.LAVENDER);
+        scope.setForeground(new Color(219, 234, 254)); // light blue on blue hero
         details.add(scope);
 
         hero.add(details, BorderLayout.CENTER);
@@ -101,16 +101,16 @@ public class SuperAdminDashboard extends JPanel {
 
         // 3. SHORTCUTS
         RoundedCard actionsCard = new RoundedCard(12, AppTheme.CARD, AppTheme.BORDER);
-        actionsCard.setLayout(new BorderLayout(12, 0));
-        actionsCard.setMaximumSize(new Dimension(Integer.MAX_VALUE, 65));
+        actionsCard.setLayout(new BorderLayout(0, 6));
+        actionsCard.setMaximumSize(new Dimension(Integer.MAX_VALUE, 96));
         actionsCard.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         JLabel actTitle = new JLabel("Quick Administrative Actions:");
         actTitle.setFont(AppTheme.SMALL.deriveFont(Font.BOLD));
         actTitle.setForeground(AppTheme.NAVY);
-        actionsCard.add(actTitle, BorderLayout.WEST);
+        actionsCard.add(actTitle, BorderLayout.NORTH);
 
-        JPanel btnRow = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
+        JPanel btnRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
         btnRow.setOpaque(false);
 
         ModernButton reviewBtn = new ModernButton("Review Requests (" + pendingCount + ")", ModernButton.Variant.PRIMARY);
@@ -129,7 +129,7 @@ public class SuperAdminDashboard extends JPanel {
         btnRow.add(manageAdminsBtn);
         btnRow.add(manageCollegesBtn);
 
-        actionsCard.add(btnRow, BorderLayout.EAST);
+        actionsCard.add(btnRow, BorderLayout.CENTER);
         content.add(actionsCard);
         content.add(Box.createVerticalStrut(22));
 
@@ -147,7 +147,7 @@ public class SuperAdminDashboard extends JPanel {
                 final AdminRequest req = pendingReqs.get(i);
                 RoundedCard reqCard = new RoundedCard(10, AppTheme.CARD, AppTheme.BORDER);
                 reqCard.setLayout(new BorderLayout(14, 0));
-                reqCard.setMaximumSize(new Dimension(Integer.MAX_VALUE, 80));
+                reqCard.setMaximumSize(new Dimension(Integer.MAX_VALUE, 92));
                 reqCard.setAlignmentX(Component.LEFT_ALIGNMENT);
 
                 JPanel mid = new JPanel();

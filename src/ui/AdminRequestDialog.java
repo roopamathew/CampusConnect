@@ -34,7 +34,7 @@ public class AdminRequestDialog extends JDialog {
     private final JTextField nameField = new JTextField();
     private final JTextField emailField = new JTextField();
     private final JTextField phoneField = new JTextField();
-    private final JComboBox<String> collegeBox = new JComboBox<String>();
+    private final AutoCompleteComboBox collegeBox = AutoCompleteComboBox.freeText(new String[0]);
     private final JTextField designationField = new JTextField();
     private final JTextArea reasonArea = new JTextArea(4, 20);
 
@@ -79,15 +79,12 @@ public class AdminRequestDialog extends JDialog {
         gbc.insets = new Insets(5, 4, 5, 4);
         gbc.weightx = 1;
 
-        for (String c : DummyData.getCollegeNames()) {
-            collegeBox.addItem(c);
-        }
+        collegeBox.setItems(DummyData.getCollegeNames().toArray(new String[0]));
 
         AppTheme.styleField(nameField);
         AppTheme.styleField(emailField);
         AppTheme.styleField(phoneField);
         AppTheme.styleField(designationField);
-        AppTheme.styleComboBox(collegeBox);
         AppTheme.styleTextArea(reasonArea);
 
         int row = 0;
@@ -137,7 +134,7 @@ public class AdminRequestDialog extends JDialog {
         String name = nameField.getText().trim();
         String email = emailField.getText().trim();
         String phone = phoneField.getText().trim();
-        String college = String.valueOf(collegeBox.getSelectedItem());
+        String college = collegeBox.getValue();
         String designation = designationField.getText().trim();
         String reason = reasonArea.getText().trim();
 

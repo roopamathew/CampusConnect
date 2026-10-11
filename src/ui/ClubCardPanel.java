@@ -55,7 +55,7 @@ public class ClubCardPanel extends RoundedCard {
         center.add(name);
         center.add(Box.createVerticalStrut(4));
 
-        JLabel desc = new JLabel("<html><div style='width:620px;line-height:1.4;color:#1A233A;'>"
+        JLabel desc = new JLabel("<html><div style='line-height:1.4;color:#1A233A;'>"
                 + club.getDescription() + "</div></html>");
         desc.setFont(AppTheme.BODY);
         center.add(desc);

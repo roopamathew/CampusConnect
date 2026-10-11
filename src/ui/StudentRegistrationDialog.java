@@ -35,11 +35,11 @@ public class StudentRegistrationDialog extends JDialog {
     private final JTextField usernameField = new JTextField();
     private final JPasswordField passwordField = new JPasswordField();
     private final JPasswordField confirmPasswordField = new JPasswordField();
-    private final JComboBox<String> collegeBox = new JComboBox<String>();
+    private final AutoCompleteComboBox collegeBox = AutoCompleteComboBox.freeText(new String[0]);
     private final JTextField courseField = new JTextField("B.Tech Computer Science");
     private final JTextField branchField = new JTextField("Computer Science & Engineering");
     private final JTextField yearField = new JTextField("Year 1, Semester 1");
-    private final JComboBox<String> interestBox = new JComboBox<String>(new String[] {
+    private final AutoCompleteComboBox interestBox = AutoCompleteComboBox.strict(new String[] {
             "Technology", "Cultural", "Finance", "Sports", "Arts", "General"
     });
 
@@ -87,9 +87,7 @@ public class StudentRegistrationDialog extends JDialog {
         gbc.weightx = 1;
 
         // Populate colleges
-        for (String c : DummyData.getCollegeNames()) {
-            collegeBox.addItem(c);
-        }
+        collegeBox.setItems(DummyData.getCollegeNames().toArray(new String[0]));
 
         AppTheme.styleField(nameField);
         AppTheme.styleField(emailField);
@@ -155,11 +153,11 @@ public class StudentRegistrationDialog extends JDialog {
         String username = usernameField.getText().trim();
         String password = new String(passwordField.getPassword());
         String confirmPassword = new String(confirmPasswordField.getPassword());
-        String college = String.valueOf(collegeBox.getSelectedItem());
+        String college = collegeBox.getValue();
         String course = courseField.getText().trim();
         String branch = branchField.getText().trim();
         String year = yearField.getText().trim();
-        String interest = String.valueOf(interestBox.getSelectedItem());
+        String interest = interestBox.getValue();
 
         if (name.isEmpty() || email.isEmpty() || username.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Please fill all required fields marked with *.",

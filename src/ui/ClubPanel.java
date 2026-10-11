@@ -23,8 +23,8 @@ public class ClubPanel extends JPanel {
 
     private final JPanel listHost;
     private final JTextField searchField = new JTextField();
-    private final JComboBox<String> categoryBox = new JComboBox<String>();
-    private final JComboBox<String> collegeBox = new JComboBox<String>();
+    private final AutoCompleteComboBox categoryBox = AutoCompleteComboBox.freeText(new String[]{"All Categories"});
+    private final AutoCompleteComboBox collegeBox = AutoCompleteComboBox.freeText(new String[]{"All Colleges"});
 
     public ClubPanel(MainFrame mainFrame) {
         setLayout(new BorderLayout());
@@ -59,7 +59,7 @@ public class ClubPanel extends JPanel {
     private JPanel buildFilterBar() {
         RoundedCard bar = new RoundedCard(12, AppTheme.CARD, AppTheme.BORDER);
         bar.setLayout(new BorderLayout(12, 8));
-        bar.setMaximumSize(new Dimension(Integer.MAX_VALUE, 54));
+        bar.setMaximumSize(new Dimension(Integer.MAX_VALUE, 70));
         bar.setAlignmentX(LEFT_ALIGNMENT);
 
         AppTheme.styleField(searchField);
@@ -92,32 +92,34 @@ public class ClubPanel extends JPanel {
     }
 
     private void initFilters() {
-        categoryBox.removeAllItems();
-        categoryBox.addItem("All Categories");
+        List<String> cats = new ArrayList<String>();
+        cats.add("All Categories");
         for (String c : DummyData.CLUB_CATEGORIES) {
-            categoryBox.addItem(c);
+            cats.add(c);
         }
+        categoryBox.setItems(cats.toArray(new String[0]));
 
-        collegeBox.removeAllItems();
-        collegeBox.addItem("All Colleges");
+        List<String> colleges = new ArrayList<String>();
+        colleges.add("All Colleges");
         for (String col : DummyData.getCollegeNames()) {
-            collegeBox.addItem(col);
+            colleges.add(col);
         }
+        collegeBox.setItems(colleges.toArray(new String[0]));
     }
 
     public void refresh() {
         listHost.removeAll();
         String query = searchField.getText().trim().toLowerCase();
-        String selCat = String.valueOf(categoryBox.getSelectedItem());
-        String selCol = String.valueOf(collegeBox.getSelectedItem());
+        String selCat = categoryBox.getValue();
+        String selCol = collegeBox.getValue();
 
         List<Club> matched = new ArrayList<Club>();
         for (Club club : DummyData.clubs) {
             boolean matchesQuery = query.isEmpty()
                     || club.getClubName().toLowerCase().contains(query)
                     || club.getDescription().toLowerCase().contains(query);
-            boolean matchesCat = "All Categories".equals(selCat) || club.getCategory().equalsIgnoreCase(selCat);
-            boolean matchesCol = "All Colleges".equals(selCol) || club.getCollege().equalsIgnoreCase(selCol);
+            boolean matchesCat = "All Categories".equalsIgnoreCase(selCat) || club.getCategory().equalsIgnoreCase(selCat);
+            boolean matchesCol = "All Colleges".equalsIgnoreCase(selCol) || club.getCollege().equalsIgnoreCase(selCol);
 
             if (matchesQuery && matchesCat && matchesCol) {
                 matched.add(club);
@@ -129,8 +131,8 @@ public class ClubPanel extends JPanel {
                     "There are no student clubs matching your current filters.",
                     "Reset Filters", () -> {
                 searchField.setText("");
-                categoryBox.setSelectedIndex(0);
-                collegeBox.setSelectedIndex(0);
+                categoryBox.setValue("All Categories");
+                collegeBox.setValue("All Colleges");
                 refresh();
             }));
         } else {

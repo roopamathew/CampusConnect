@@ -179,11 +179,9 @@ public class ManageClubsPanel extends JPanel {
         JTextField nameField = new JTextField(existing == null ? "" : existing.getClubName());
         AppTheme.styleField(nameField);
 
-        JComboBox<String> categoryBox = new JComboBox<String>(DummyData.CLUB_CATEGORIES);
-        AppTheme.styleComboBox(categoryBox);
+        AutoCompleteComboBox categoryBox = AutoCompleteComboBox.freeText(DummyData.CLUB_CATEGORIES);
 
-        JComboBox<String> collegeBox = new JComboBox<String>(DummyData.getCollegeNames().toArray(new String[0]));
-        AppTheme.styleComboBox(collegeBox);
+        AutoCompleteComboBox collegeBox = AutoCompleteComboBox.freeText(DummyData.getCollegeNames().toArray(new String[0]));
         JTextField lockedCollege = new JTextField(adminCollege);
         AppTheme.styleField(lockedCollege);
         lockedCollege.setEditable(false);
@@ -200,8 +198,8 @@ public class ManageClubsPanel extends JPanel {
         final ImagePickerField imagePicker = new ImagePickerField(existing != null ? existing.getImagePath() : "");
 
         if (existing != null) {
-            categoryBox.setSelectedItem(existing.getCategory());
-            collegeBox.setSelectedItem(existing.getCollege());
+            categoryBox.setValue(existing.getCategory());
+            collegeBox.setValue(existing.getCollege());
         }
 
         int row = 0;
@@ -250,8 +248,8 @@ public class ManageClubsPanel extends JPanel {
                 return;
             }
 
-            String chosenCollege = isSuper ? String.valueOf(collegeBox.getSelectedItem()) : adminCollege;
-            String chosenCat = String.valueOf(categoryBox.getSelectedItem());
+            String chosenCollege = isSuper ? collegeBox.getValue() : adminCollege;
+            String chosenCat = categoryBox.getValue().isEmpty() ? DummyData.CLUB_CATEGORIES[0] : categoryBox.getValue();
 
             if (existing == null) {
                 Club created = new Club(DummyData.nextClubId(), n, chosenCollege, chosenCat, d, cp, em);

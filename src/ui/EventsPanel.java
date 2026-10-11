@@ -8,6 +8,7 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -26,11 +27,11 @@ public class EventsPanel extends JPanel {
     private final MainFrame mainFrame;
     private final JPanel listHost;
     private final JTextField searchField = new JTextField();
-    private final JComboBox<String> categoryBox = new JComboBox<String>();
-    private final JComboBox<String> collegeBox = new JComboBox<String>();
-    private final JComboBox<String> locationBox = new JComboBox<String>();
-    private final JComboBox<String> statusBox = new JComboBox<String>();
-    private final JComboBox<String> sortBox = new JComboBox<String>(new String[] {
+    private final AutoCompleteComboBox categoryBox = AutoCompleteComboBox.freeText(new String[]{"All Categories"});
+    private final AutoCompleteComboBox collegeBox = AutoCompleteComboBox.freeText(new String[]{"All Colleges"});
+    private final AutoCompleteComboBox locationBox = AutoCompleteComboBox.freeText(new String[]{"All Locations"});
+    private final AutoCompleteComboBox statusBox = AutoCompleteComboBox.freeText(new String[]{"All Status"});
+    private final AutoCompleteComboBox sortBox = AutoCompleteComboBox.strict(new String[] {
             "Date: Earliest First", "Date: Latest First", "Name: A-Z"
     });
     private final JLabel resultCountLabel = new JLabel();
@@ -83,12 +84,12 @@ public class EventsPanel extends JPanel {
         RoundedCard card = new RoundedCard(14, AppTheme.CARD, AppTheme.BORDER);
         card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
         card.setAlignmentX(LEFT_ALIGNMENT);
-        card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 150));
+        card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 200));
 
         // Search Bar row
         JPanel searchRow = new JPanel(new BorderLayout(10, 0));
         searchRow.setOpaque(false);
-        searchRow.setMaximumSize(new Dimension(Integer.MAX_VALUE, 38));
+        searchRow.setMaximumSize(new Dimension(Integer.MAX_VALUE, 42));
 
         AppTheme.styleField(searchField);
         searchField.setPreferredSize(new Dimension(0, 38));
@@ -113,10 +114,10 @@ public class EventsPanel extends JPanel {
         card.add(searchRow);
         card.add(Box.createVerticalStrut(12));
 
-        // Dropdowns grid
-        JPanel grid = new JPanel(new GridLayout(2, 5, 8, 4));
+        // Dropdowns grid: 2 rows (labels + dropdowns), 5 columns
+        JPanel grid = new JPanel(new java.awt.GridLayout(2, 5, 8, 4));
         grid.setOpaque(false);
-        grid.setMaximumSize(new Dimension(Integer.MAX_VALUE, 70));
+        grid.setMaximumSize(new Dimension(Integer.MAX_VALUE, 80));
 
         grid.add(filterLabel("Category"));
         grid.add(filterLabel("College"));
@@ -154,29 +155,25 @@ public class EventsPanel extends JPanel {
     }
 
     private void fillFilterBoxes() {
-        categoryBox.removeAllItems();
-        categoryBox.addItem("All Categories");
-        for (String c : DummyData.CATEGORIES) {
-            categoryBox.addItem(c);
-        }
+        List<String> cats = new ArrayList<String>();
+        cats.add("All Categories");
+        for (String c : DummyData.CATEGORIES) cats.add(c);
+        categoryBox.setItems(cats.toArray(new String[0]));
 
-        collegeBox.removeAllItems();
-        collegeBox.addItem("All Colleges");
-        for (String col : DummyData.getCollegeNames()) {
-            collegeBox.addItem(col);
-        }
+        List<String> cols = new ArrayList<String>();
+        cols.add("All Colleges");
+        for (String col : DummyData.getCollegeNames()) cols.add(col);
+        collegeBox.setItems(cols.toArray(new String[0]));
 
-        locationBox.removeAllItems();
-        locationBox.addItem("All Locations");
-        for (String loc : DummyData.getLocations()) {
-            locationBox.addItem(loc);
-        }
+        List<String> locs = new ArrayList<String>();
+        locs.add("All Locations");
+        for (String loc : DummyData.getLocations()) locs.add(loc);
+        locationBox.setItems(locs.toArray(new String[0]));
 
-        statusBox.removeAllItems();
-        statusBox.addItem("All Status");
-        for (String st : DummyData.STATUSES) {
-            statusBox.addItem(st);
-        }
+        List<String> stats = new ArrayList<String>();
+        stats.add("All Status");
+        for (String st : DummyData.STATUSES) stats.add(st);
+        statusBox.setItems(stats.toArray(new String[0]));
     }
 
     public void applySearch(String query) {
@@ -186,22 +183,22 @@ public class EventsPanel extends JPanel {
 
     private void resetFilters() {
         searchField.setText("");
-        categoryBox.setSelectedIndex(0);
-        collegeBox.setSelectedIndex(0);
-        locationBox.setSelectedIndex(0);
-        statusBox.setSelectedIndex(0);
-        sortBox.setSelectedIndex(0);
+        categoryBox.setValue("All Categories");
+        collegeBox.setValue("All Colleges");
+        locationBox.setValue("All Locations");
+        statusBox.setValue("All Status");
+        sortBox.setValue("Date: Earliest First");
         refresh();
     }
 
     public void refresh() {
         List<Event> filtered = DummyData.filterEvents(
                 searchField.getText(),
-                String.valueOf(categoryBox.getSelectedItem()),
-                String.valueOf(collegeBox.getSelectedItem()),
-                String.valueOf(locationBox.getSelectedItem()),
-                String.valueOf(statusBox.getSelectedItem()),
-                String.valueOf(sortBox.getSelectedItem()));
+                categoryBox.getValue(),
+                collegeBox.getValue(),
+                locationBox.getValue(),
+                statusBox.getValue(),
+                sortBox.getValue());
 
         resultCountLabel.setText("Showing " + filtered.size() + (filtered.size() == 1 ? " event" : " events"));
 

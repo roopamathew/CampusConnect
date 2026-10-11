@@ -11,6 +11,8 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -23,6 +25,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.JScrollPane;
 
 /**
  * Redesigned Student Discovery Dashboard.
@@ -33,6 +36,8 @@ public class StudentDashboard extends JPanel {
     private final MainFrame mainFrame;
     private final JPanel content;
     private final JTextField searchField = new JTextField();
+    private static final String SEARCH_HINT = "Search events, categories, or colleges...";
+    private boolean showingSearchHint = true;
 
     public StudentDashboard(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
@@ -44,7 +49,16 @@ public class StudentDashboard extends JPanel {
         content.setBackground(AppTheme.BG);
         content.setBorder(BorderFactory.createEmptyBorder(24, 28, 28, 28));
 
-        add(UiUtil.scroll(content), BorderLayout.CENTER);
+        JScrollPane scrollPane = new JScrollPane(content);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder());
+        scrollPane.setOpaque(false);
+        scrollPane.getViewport().setOpaque(false);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.getViewport().setScrollMode(javax.swing.JViewport.SIMPLE_SCROLL_MODE);
+
+        scrollPane.setWheelScrollingEnabled(true);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        add(scrollPane, BorderLayout.CENTER);
         refresh();
     }
 
@@ -115,7 +129,7 @@ public class StudentDashboard extends JPanel {
         RoundedCard hero = new RoundedCard(14, AppTheme.CARD, AppTheme.BORDER);
         hero.setLayout(new BorderLayout(16, 0));
         hero.setAlignmentX(Component.LEFT_ALIGNMENT);
-        hero.setMaximumSize(new Dimension(Integer.MAX_VALUE, 110));
+        hero.setMaximumSize(new Dimension(Integer.MAX_VALUE, 130));
 
         JPanel left = new JPanel();
         left.setOpaque(false);
@@ -126,7 +140,7 @@ public class StudentDashboard extends JPanel {
 
         JLabel welcome = new JLabel("Welcome back, " + user.getFullName() + "!");
         welcome.setFont(AppTheme.TITLE.deriveFont(22f));
-        welcome.setForeground(AppTheme.NAVY);
+        welcome.setForeground(AppTheme.TEXT);
         nameRow.add(welcome);
 
         PillBadge homeBadge = new PillBadge("Home: " + user.getCollege(),
@@ -136,7 +150,7 @@ public class StudentDashboard extends JPanel {
         left.add(nameRow);
         left.add(Box.createVerticalStrut(6));
 
-        JLabel tagline = new JLabel("Discover Beyond Your Campus — Find hackathons, fests, workshops, and clubs across colleges.");
+        JLabel tagline = new JLabel("Discover Beyond Your Campus — Find events, workshops, and clubs across colleges.");
         tagline.setFont(AppTheme.BODY);
         tagline.setForeground(AppTheme.MUTED);
         left.add(tagline);
@@ -182,21 +196,54 @@ public class StudentDashboard extends JPanel {
         bar.setMaximumSize(new Dimension(Integer.MAX_VALUE, 42));
 
         AppTheme.styleField(searchField);
-        searchField.setPreferredSize(new Dimension(0, 40));
         searchField.setFont(AppTheme.BODY);
-        searchField.putClientProperty("JTextField.placeholderText", "Search by event title, category, or college name...");
+        searchField.setMinimumSize(new Dimension(80, 40));
+        searchField.setPreferredSize(new Dimension(300, 40));
+        searchField.setText(SEARCH_HINT);
+        searchField.setForeground(AppTheme.MUTED);
+        searchField.setToolTipText("Enter an event title, category, or college name");
+        searchField.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                if (showingSearchHint) {
+                    searchField.setText("");
+                    searchField.setForeground(AppTheme.TEXT);
+                    showingSearchHint = false;
+                }
+            }
 
-        ModernButton searchBtn = new ModernButton("Search Events", ModernButton.Variant.PRIMARY);
-        searchBtn.addActionListener(e -> mainFrame.searchFromDashboard(searchField.getText().trim()));
-        searchField.addActionListener(e -> mainFrame.searchFromDashboard(searchField.getText().trim()));
+            @Override
+            public void focusLost(FocusEvent e) {
+                if (searchField.getText().trim().isEmpty()) {
+                    searchField.setText(SEARCH_HINT);
+                    searchField.setForeground(AppTheme.MUTED);
+                    showingSearchHint = true;
+                }
+            }
+        });
+
+        ModernButton searchBtn = new ModernButton("Search", ModernButton.Variant.PRIMARY);
+        searchBtn.setPreferredSize(new Dimension(110, 40));
+        searchBtn.addActionListener(e -> performDashboardSearch());
+        searchField.addActionListener(e -> performDashboardSearch());
 
         bar.add(searchField, BorderLayout.CENTER);
         bar.add(searchBtn, BorderLayout.EAST);
         return bar;
     }
 
+    private void performDashboardSearch() {
+        String query = showingSearchHint ? "" : searchField.getText().trim();
+        if (!query.isEmpty()) {
+            mainFrame.searchFromDashboard(query);
+        } else {
+            searchField.requestFocusInWindow();
+        }
+    }
+
     private void addHighlightSection(String title, String subtitle, JPanel body, Runnable onExplore) {
-        RoundedCard wrap = new RoundedCard(14, new Color(250, 248, 254), new Color(220, 212, 236));
+        // Use the active theme so this section does not become a white block in dark mode.
+        RoundedCard wrap = new RoundedCard(14, AppTheme.CARD, AppTheme.BORDER);
         wrap.setLayout(new BoxLayout(wrap, BoxLayout.Y_AXIS));
         wrap.setAlignmentX(Component.LEFT_ALIGNMENT);
 
@@ -212,7 +259,7 @@ public class StudentDashboard extends JPanel {
 
         JLabel label = new JLabel(title);
         label.setFont(AppTheme.HEADING.deriveFont(Font.BOLD, 16f));
-        label.setForeground(AppTheme.NAVY);
+        label.setForeground(AppTheme.TEXT);
         titleBadgeRow.add(label);
 
         PillBadge featureBadge = new PillBadge("INTER-COLLEGE", new Color(248, 240, 222), AppTheme.ACCENT.darker());
@@ -237,7 +284,10 @@ public class StudentDashboard extends JPanel {
         wrap.add(Box.createVerticalStrut(14));
 
         body.setOpaque(false);
+        body.setAlignmentX(Component.LEFT_ALIGNMENT);
         wrap.add(body);
+        wrap.setAlignmentX(Component.LEFT_ALIGNMENT);
+        wrap.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
 
         content.add(wrap);
     }
@@ -289,7 +339,7 @@ public class StudentDashboard extends JPanel {
 
             JLabel name = new JLabel(event.getEventName());
             name.setFont(AppTheme.BOLD.deriveFont(14f));
-            name.setForeground(AppTheme.NAVY);
+            name.setForeground(AppTheme.TEXT);
             mid.add(name);
 
             JLabel sub = new JLabel(event.getCollege() + "  ·  " + event.getDate().format(fmt) + "  ·  " + event.getCategory());

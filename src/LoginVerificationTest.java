@@ -73,8 +73,8 @@ public class LoginVerificationTest {
         failures += check("No demo College Admin button", !hasDemoAdminBtn);
         failures += check("No demo Super Admin button", !hasDemoSuperAdminBtn);
         failures += check("No 'Demo Accounts' section", !hasDemoAccountText);
-        failures += check("No Google sign-in button", !hasGoogleBtn);
-        failures += check("No Remember Me checkbox", !hasRememberMe);
+        failures += check("Continue with Google button present", hasGoogleBtn);
+        failures += check("Remember Me checkbox present", hasRememberMe);
 
         // 3. Verify Required Text and Branding Content
         boolean hasBrandName = false;
@@ -102,7 +102,8 @@ public class LoginVerificationTest {
                     if (t.contains("Connect with Communities")) hasFeature2 = true;
                     if (t.contains("Stay Connected")) hasFeature3 = true;
                     if (t.contains("Welcome back")) hasWelcomeBack = true;
-                    if (t.contains("Username or institutional email")) hasUsernameLabel = true;
+                    // Accept either the old label or the new "Email address" label
+                    if (t.contains("Username or institutional email") || t.contains("Email address")) hasUsernameLabel = true;
                     if (t.contains("Password")) hasPasswordLabel = true;
                     if (t.contains("Forgot password?")) hasForgotPassLink = true;
                     if (t.contains("Create an account")) hasCreateAccountLink = true;

@@ -182,11 +182,9 @@ public class ManageNoticesPanel extends JPanel {
         JTextArea descArea = new JTextArea(existing == null ? "" : existing.getDescription(), 4, 20);
         AppTheme.styleTextArea(descArea);
 
-        JComboBox<String> typeBox = new JComboBox<String>(DummyData.NOTICE_TYPES);
-        AppTheme.styleComboBox(typeBox);
+        AutoCompleteComboBox typeBox = AutoCompleteComboBox.strict(DummyData.NOTICE_TYPES);
 
-        JComboBox<String> collegeBox = new JComboBox<String>(DummyData.getCollegeNames().toArray(new String[0]));
-        AppTheme.styleComboBox(collegeBox);
+        AutoCompleteComboBox collegeBox = AutoCompleteComboBox.freeText(DummyData.getCollegeNames().toArray(new String[0]));
         JTextField lockedCollege = new JTextField(adminCollege);
         AppTheme.styleField(lockedCollege);
         lockedCollege.setEditable(false);
@@ -194,8 +192,8 @@ public class ManageNoticesPanel extends JPanel {
         final ImagePickerField imagePicker = new ImagePickerField(existing != null ? existing.getImagePath() : "");
 
         if (existing != null) {
-            typeBox.setSelectedItem(existing.getType());
-            collegeBox.setSelectedItem(existing.getCollege());
+            typeBox.setValue(existing.getType());
+            collegeBox.setValue(existing.getCollege());
         }
 
         int row = 0;
@@ -241,8 +239,14 @@ public class ManageNoticesPanel extends JPanel {
                 return;
             }
 
-            String chosenCollege = isSuper ? String.valueOf(collegeBox.getSelectedItem()) : adminCollege;
-            String chosenType = String.valueOf(typeBox.getSelectedItem());
+            String chosenCollege = isSuper ? collegeBox.getValue() : adminCollege;
+            String chosenType = typeBox.getValue();
+            // Validate type against allowed values
+            boolean validType = false;
+            for (String nType : DummyData.NOTICE_TYPES) {
+                if (nType.equalsIgnoreCase(chosenType)) { validType = true; chosenType = nType; break; }
+            }
+            if (!validType) chosenType = DummyData.NOTICE_TYPES[0];
 
             if (existing == null) {
                 Notice created = new Notice(DummyData.nextNoticeId(), t, d, chosenCollege, LocalDate.now(), chosenType);

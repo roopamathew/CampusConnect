@@ -58,7 +58,7 @@ public class CollegeCardPanel extends RoundedCard {
         center.add(location);
         center.add(Box.createVerticalStrut(6));
 
-        JLabel desc = new JLabel("<html><div style='width:580px;line-height:1.4;color:#1A233A;'>"
+        JLabel desc = new JLabel("<html><div style='line-height:1.4;color:#1A233A;'>"
                 + college.getDescription() + "</div></html>");
         desc.setFont(AppTheme.BODY);
         center.add(desc);

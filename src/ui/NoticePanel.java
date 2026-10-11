@@ -23,8 +23,8 @@ public class NoticePanel extends JPanel {
 
     private final JPanel listHost;
     private final JTextField searchField = new JTextField();
-    private final JComboBox<String> typeFilter = new JComboBox<String>();
-    private final JComboBox<String> collegeFilter = new JComboBox<String>();
+    private final AutoCompleteComboBox typeFilter = AutoCompleteComboBox.strict(new String[]{"All Types"});
+    private final AutoCompleteComboBox collegeFilter = AutoCompleteComboBox.freeText(new String[]{"All Colleges"});
 
     public NoticePanel(MainFrame mainFrame) {
         setLayout(new BorderLayout());
@@ -59,7 +59,7 @@ public class NoticePanel extends JPanel {
     private JPanel buildFilterBar() {
         RoundedCard bar = new RoundedCard(12, AppTheme.CARD, AppTheme.BORDER);
         bar.setLayout(new BorderLayout(12, 8));
-        bar.setMaximumSize(new Dimension(Integer.MAX_VALUE, 54));
+        bar.setMaximumSize(new Dimension(Integer.MAX_VALUE, 70));
         bar.setAlignmentX(LEFT_ALIGNMENT);
 
         AppTheme.styleField(searchField);
@@ -92,33 +92,35 @@ public class NoticePanel extends JPanel {
     }
 
     private void initFilters() {
-        typeFilter.removeAllItems();
-        typeFilter.addItem("All Types");
+        List<String> types = new ArrayList<String>();
+        types.add("All Types");
         for (String t : DummyData.NOTICE_TYPES) {
-            typeFilter.addItem(t);
+            types.add(t);
         }
+        typeFilter.setItems(types.toArray(new String[0]));
 
-        collegeFilter.removeAllItems();
-        collegeFilter.addItem("All Colleges");
+        List<String> colleges = new ArrayList<String>();
+        colleges.add("All Colleges");
         for (String c : DummyData.getCollegeNames()) {
-            collegeFilter.addItem(c);
+            colleges.add(c);
         }
+        collegeFilter.setItems(colleges.toArray(new String[0]));
     }
 
     public void refresh() {
         listHost.removeAll();
 
         String query = searchField.getText().trim().toLowerCase();
-        String selType = String.valueOf(typeFilter.getSelectedItem());
-        String selCollege = String.valueOf(collegeFilter.getSelectedItem());
+        String selType = typeFilter.getValue();
+        String selCollege = collegeFilter.getValue();
 
         List<Notice> filtered = new ArrayList<Notice>();
         for (Notice notice : DummyData.notices) {
             boolean matchesQuery = query.isEmpty()
                     || notice.getTitle().toLowerCase().contains(query)
                     || notice.getDescription().toLowerCase().contains(query);
-            boolean matchesType = "All Types".equals(selType) || notice.getType().equalsIgnoreCase(selType);
-            boolean matchesCollege = "All Colleges".equals(selCollege) || notice.getCollege().equalsIgnoreCase(selCollege);
+            boolean matchesType = "All Types".equalsIgnoreCase(selType) || notice.getType().equalsIgnoreCase(selType);
+            boolean matchesCollege = "All Colleges".equalsIgnoreCase(selCollege) || notice.getCollege().equalsIgnoreCase(selCollege);
 
             if (matchesQuery && matchesType && matchesCollege) {
                 filtered.add(notice);
@@ -130,8 +132,8 @@ public class NoticePanel extends JPanel {
                     "There are no notices matching your current search criteria.",
                     "Reset Filters", () -> {
                 searchField.setText("");
-                typeFilter.setSelectedIndex(0);
-                collegeFilter.setSelectedIndex(0);
+                typeFilter.setValue("All Types");
+                collegeFilter.setValue("All Colleges");
                 refresh();
             }));
         } else {

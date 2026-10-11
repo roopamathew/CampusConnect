@@ -50,10 +50,10 @@ public class AdminDashboard extends JPanel {
         String college = admin.getCollege();
 
         // 1. ADMIN WELCOME BANNER
-        RoundedCard hero = new RoundedCard(14, AppTheme.NAVY, AppTheme.NAVY_DARK);
+        RoundedCard hero = new RoundedCard(14, AppTheme.PRIMARY, AppTheme.PRIMARY_DARK);
         hero.setLayout(new BorderLayout(16, 0));
         hero.setBorder(BorderFactory.createEmptyBorder(20, 24, 20, 24));
-        hero.setMaximumSize(new Dimension(Integer.MAX_VALUE, 115));
+        hero.setMaximumSize(new Dimension(Integer.MAX_VALUE, 130));
         hero.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         InitialsAvatar avatar = new InitialsAvatar(admin.getFullName(), 54, AppTheme.INDIGO, Color.WHITE);
@@ -80,7 +80,7 @@ public class AdminDashboard extends JPanel {
                 ? admin.getDesignation() : "College Administrator";
         JLabel scope = new JLabel("🏛  Assigned Campus: " + college + "   ·   " + desig);
         scope.setFont(AppTheme.BODY);
-        scope.setForeground(AppTheme.LAVENDER);
+        scope.setForeground(new Color(219, 234, 254)); // light blue text on blue hero
         details.add(scope);
 
         hero.add(details, BorderLayout.CENTER);
@@ -103,16 +103,16 @@ public class AdminDashboard extends JPanel {
 
         // 3. QUICK MANAGEMENT ACTIONS
         RoundedCard actionsCard = new RoundedCard(12, AppTheme.CARD, AppTheme.BORDER);
-        actionsCard.setLayout(new BorderLayout(12, 0));
-        actionsCard.setMaximumSize(new Dimension(Integer.MAX_VALUE, 65));
+        actionsCard.setLayout(new BorderLayout(0, 6));
+        actionsCard.setMaximumSize(new Dimension(Integer.MAX_VALUE, 96));
         actionsCard.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         JLabel actTitle = new JLabel("Campus Administration Shortcuts:");
         actTitle.setFont(AppTheme.SMALL.deriveFont(Font.BOLD));
         actTitle.setForeground(AppTheme.NAVY);
-        actionsCard.add(actTitle, BorderLayout.WEST);
+        actionsCard.add(actTitle, BorderLayout.NORTH);
 
-        JPanel btnRow = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
+        JPanel btnRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
         btnRow.setOpaque(false);
 
         ModernButton addEventBtn = new ModernButton("+ Create Event", ModernButton.Variant.PRIMARY);
@@ -136,7 +136,7 @@ public class AdminDashboard extends JPanel {
         btnRow.add(addClubBtn);
         btnRow.add(viewRegsBtn);
 
-        actionsCard.add(btnRow, BorderLayout.EAST);
+        actionsCard.add(btnRow, BorderLayout.CENTER);
         content.add(actionsCard);
         content.add(Box.createVerticalStrut(22));
 
@@ -155,7 +155,7 @@ public class AdminDashboard extends JPanel {
                 final Event ev = myEvents.get(i);
                 RoundedCard evCard = new RoundedCard(10, AppTheme.CARD, AppTheme.BORDER);
                 evCard.setLayout(new BorderLayout(14, 0));
-                evCard.setMaximumSize(new Dimension(Integer.MAX_VALUE, 76));
+                evCard.setMaximumSize(new Dimension(Integer.MAX_VALUE, 92));
                 evCard.setAlignmentX(Component.LEFT_ALIGNMENT);
 
                 JPanel mid = new JPanel();

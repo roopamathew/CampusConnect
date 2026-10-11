@@ -198,12 +198,10 @@ public class ManageEventsPanel extends JPanel {
         JTextArea description = new JTextArea(existing == null ? "" : existing.getDescription(), 4, 20);
         AppTheme.styleTextArea(description);
 
-        JComboBox<String> category = new JComboBox<String>(DummyData.CATEGORIES);
-        AppTheme.styleComboBox(category);
+        AutoCompleteComboBox category = AutoCompleteComboBox.freeText(DummyData.CATEGORIES);
 
         // Institutional college assignment: derived from administrator to enforce boundaries
-        JComboBox<String> collegeBox = new JComboBox<String>(DummyData.getCollegeNames().toArray(new String[0]));
-        AppTheme.styleComboBox(collegeBox);
+        AutoCompleteComboBox collegeBox = AutoCompleteComboBox.freeText(DummyData.getCollegeNames().toArray(new String[0]));
         JTextField lockedCollege = field(adminCollege);
         lockedCollege.setEditable(false);
 
@@ -216,15 +214,14 @@ public class ManageEventsPanel extends JPanel {
         JTextField contact = field(existing == null ? (user != null ? user.getFullName() : "") : existing.getContactPerson());
         JTextField email = field(existing == null ? (user != null ? user.getEmail() : "") : existing.getContactEmail());
         JTextField max = field(existing == null ? "100" : String.valueOf(existing.getMaxParticipants()));
-        JComboBox<String> status = new JComboBox<String>(DummyData.STATUSES);
-        AppTheme.styleComboBox(status);
+        AutoCompleteComboBox status = AutoCompleteComboBox.strict(DummyData.STATUSES);
 
         final ImagePickerField posterPicker = new ImagePickerField(existing != null ? existing.getImagePath() : "");
 
         if (existing != null) {
-            category.setSelectedItem(existing.getCategory());
-            collegeBox.setSelectedItem(existing.getCollege());
-            status.setSelectedItem(existing.getStatus());
+            category.setValue(existing.getCategory());
+            collegeBox.setValue(existing.getCollege());
+            status.setValue(existing.getStatus());
         }
 
         int row = 0;
@@ -290,20 +287,31 @@ public class ManageEventsPanel extends JPanel {
                     return;
                 }
 
-                String chosenCollege = isSuper ? String.valueOf(collegeBox.getSelectedItem()) : adminCollege;
+                String chosenCollege = isSuper ? collegeBox.getValue() : adminCollege;
 
                 // Derive creator attribution from authenticated administrator
                 String creatorName = (user != null) ? user.getFullName() : contact.getText().trim();
                 String creatorEmail = (user != null) ? user.getEmail() : email.getText().trim();
                 String creatorDesig = (user != null && !user.getDesignation().isEmpty()) ? user.getDesignation() : "Event Coordinator";
 
+                // Validate status against allowed values
+                String chosenStatus = status.getValue();
+                boolean validStatus = false;
+                for (String s : DummyData.STATUSES) {
+                    if (s.equalsIgnoreCase(chosenStatus)) { validStatus = true; chosenStatus = s; break; }
+                }
+                if (!validStatus) chosenStatus = DummyData.STATUSES[0];
+
+                // Validate category
+                String chosenCategory = category.getValue().isEmpty() ? DummyData.CATEGORIES[0] : category.getValue();
+
                 if (existing == null) {
                     Event created = new Event(DummyData.nextEventId(), name.getText().trim(),
-                            description.getText().trim(), String.valueOf(category.getSelectedItem()),
+                            description.getText().trim(), chosenCategory,
                             chosenCollege, venue.getText().trim(), location.getText().trim(),
                             eventDate, startTime, endTime, closeDate,
                             contact.getText().trim(), email.getText().trim(), maxP, maxP,
-                            String.valueOf(status.getSelectedItem()),
+                            chosenStatus,
                             creatorName, creatorEmail, creatorDesig);
                     created.setImagePath(posterPicker.getImagePath());
                     DummyData.events.add(created);
@@ -313,7 +321,7 @@ public class ManageEventsPanel extends JPanel {
                 } else {
                     existing.setEventName(name.getText().trim());
                     existing.setDescription(description.getText().trim());
-                    existing.setCategory(String.valueOf(category.getSelectedItem()));
+                    existing.setCategory(chosenCategory);
                     if (isSuper) {
                         existing.setCollege(chosenCollege);
                     }
@@ -326,7 +334,7 @@ public class ManageEventsPanel extends JPanel {
                     existing.setContactPerson(contact.getText().trim());
                     existing.setContactEmail(email.getText().trim());
                     existing.setMaxParticipants(maxP);
-                    existing.setStatus(String.valueOf(status.getSelectedItem()));
+                    existing.setStatus(chosenStatus);
                     existing.setImagePath(posterPicker.getImagePath());
 
                     // Preserve existing creator attribution if already set
